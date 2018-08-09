@@ -21,9 +21,9 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.6",
-        "illuminate\/support": "~4.2.17",
-        "ralouphie\/mimey": "^1.0"
+        "php": ">=7.1",
+        "illuminate/support": "^5.8@dev",
+        "ralouphie/mimey": "dev-master"
     },
     "version": "1.0"
 }
