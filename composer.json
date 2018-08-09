@@ -19,11 +19,11 @@
             "AKlump\\LoftLib\\": "tests\/src\/AKlump\/LoftLib\/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "php": ">=7.1",
-        "illuminate/support": "^5.8@dev",
-        "ralouphie/mimey": "dev-master"
+        "php": ">=5.6",
+        "illuminate/support": "^5.4",
+        "ralouphie/mimey": "^2.0"
     },
     "version": "1.0"
 }
