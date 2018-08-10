@@ -88,7 +88,7 @@ class FilePath implements PersistentInterface {
 
   protected $dir, $basename, $contents, $type, $alias;
 
-  private $intention = [];
+  private $config = [];
 
   /**
    * FilePath constructor.
@@ -100,7 +100,6 @@ class FilePath implements PersistentInterface {
       'install' => TRUE,
       'extension' => NULL,
     ];
-    $this->intention = [$path, $options['extension'], $options];
 
     // Detect the type from an existing file.
     if (file_exists($path)) {
@@ -123,14 +122,55 @@ class FilePath implements PersistentInterface {
       }
     }
 
-    $this->intention[2] += [
-      'install' => TRUE,
+    $options += [
       'type' => $_type,
     ];
 
-    if ($this->intention[2]['install']) {
-      $this->install();
+    $this->type = $_type;
+    $path_is_dir = $_type === self::TYPE_DIR;
+    $path = trim($path);
+    $this->config = $this->validateConfig($path, $options);
+
+    // Generate the temp name.
+    $extension = $this->config['extension'];
+    if ($extension) {
+      $path = rtrim($path, '/') . '/' . static::tempName($extension);
     }
+
+    $this->dir = rtrim($path_is_dir ? $path : dirname($path), '/');
+    $this->basename = $path_is_dir ? '' : trim(pathinfo($path, PATHINFO_BASENAME), '/ ');
+  }
+
+  private function validateConfig($path, array $config) {
+
+    // Assert $path references a directory, not a file.
+    if (!empty($config['extension'])) {
+      if (pathinfo($path, PATHINFO_EXTENSION)) {
+        throw new \InvalidArgumentException("When providing an extension, \$path must reference a directory.");
+      }
+
+      // Make sure the extension is not a filename or a path.
+      $test = explode('.', trim($config['extension'], '.'));
+      if (count($test) > 1 || strpos($config['extension'], '/') !== FALSE) {
+        throw new \InvalidArgumentException("\$extension appears to be a filename; it must only contain the extension, e.g. 'pdf', and no leading dot");
+      }
+    }
+
+    return $config;
+  }
+
+  /**
+   * Create all parent directories on this path.
+   *
+   * @return \AKlump\LoftLib\Storage\FilePath
+   *   Self for chaining.
+   */
+  public function install() {
+    $path = $this->getPath();
+    list($this->dir, $this->basename) = static::ensureDir($path, NULL, $this->config['type'] === self::TYPE_DIR);
+    $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
+
+    return $this;
   }
 
   /**
@@ -346,6 +386,10 @@ class FilePath implements PersistentInterface {
    */
   public function save() {
     $this->validateBasename();
+
+    if ($this->config['install']) {
+      $this->install();
+    }
 
     if (@file_put_contents($this->getPath(), $this->contents) === FALSE) {
       throw new \RuntimeException("Could not save to " . $this->getPath());
@@ -641,28 +685,6 @@ class FilePath implements PersistentInterface {
     return $this->_getFilesRecursively($this->getPath(), $options);
   }
 
-  public function install() {
-    list($path, $extension, $options) = $this->intention;
-    if ($extension) {
-
-      // Assert $path references a directory, not a file.
-      if (pathinfo($path, PATHINFO_EXTENSION)) {
-        throw new \InvalidArgumentException("When providing an extension, \$path must reference a directory.");
-      }
-
-      // Make sure the extension is not a filename or a path.
-      $test = explode('.', trim($extension, '.'));
-      if (count($test) > 1 || strpos($extension, '/') !== FALSE) {
-        throw new \InvalidArgumentException("\$extension appears to be a filename; it must only contain the extension, e.g. 'pdf', and no leading dot");
-      }
-      $path = rtrim($path, '/') . '/' . static::tempName($extension);
-    }
-    list($this->dir, $this->basename) = static::ensureDir($path, NULL, $options['type'] === self::TYPE_DIR);
-    $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
-
-    return $this;
-  }
-
   /**
    * Return the contents of a file or a directory listing.
    *
@@ -707,6 +729,7 @@ class FilePath implements PersistentInterface {
     }
     $this->clearCached();
     $this->basename = trim($basename);
+    $this->config['type'] = self::TYPE_FILE;
 
     return $this;
   }
@@ -720,6 +743,9 @@ class FilePath implements PersistentInterface {
       throw new \RuntimeException("\"$source\" does not exist; can't $op.");
     }
     $this->validateBasename();
+    if ($this->config['install']) {
+      $this->install();
+    }
     if (!$function($source, ($d = $this->getPath()))) {
       throw new \RuntimeException("Could not $op \"$source\" to \"$d\"");
     }

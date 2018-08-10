@@ -12,6 +12,74 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
 
+  public function testMoveFrom() {
+    $control = 'do.re.mi';
+    $source = new FilePath($this->sb . '/alpha/index.html');
+    $source->put($control)->save();
+
+    $destination = new FilePath($this->sb . '/bravo');
+    $destination->moveFrom($source);
+
+    $this->assertFileNotExists($this->sb . '/alpha/index.html');
+    $this->assertFileExists($this->sb . '/bravo/index.html');
+    $this->assertSame($control, file_get_contents($this->sb . '/bravo/index.html'));
+  }
+
+  public function testConstructWithExtensionGeneratesTempNamePath() {
+    $obj = new FilePath($this->sb, ['extension' => 'pdf']);
+    $path = $obj->getPath();
+    $info = pathinfo($path);
+    $this->assertSame('pdf', $info['extension']);
+    $this->assertSame($this->sb, $info['dirname'] . '/');
+    $this->assertNotEmpty($info['filename']);
+
+    $obj = new FilePath($this->sb, ['extension' => '.pdf']);
+    $path = $obj->getPath();
+    $info = pathinfo($path);
+    $this->assertSame('pdf', $info['extension']);
+    $this->assertSame($this->sb, $info['dirname'] . '/');
+    $this->assertNotEmpty($info['filename']);
+  }
+
+  /**
+   * @dataProvider DataForTestChildrenAndDescendentsReturnCorrectLevelsProvider
+   */
+  public function testChildrenAndDescendentsReturnCorrectLevels($method, $args, $control) {
+    // Setup a testing file structure.
+    $dir = new FilePath($this->sb);
+    $dir->put('tbd');
+    $dir->to('do.json')->save();
+    $dir->to('re.pdf')->save();
+
+    $grandChild = new FilePath($this->sb . 'alpha/mi.txt');
+    $grandChild->put('tbd')->save();
+
+    $greatGrandChild = new FilePath($this->sb . 'alpha/bravo/fa.txt');
+    $greatGrandChild->put('tbd')->save();
+
+    // Now run the test based on the data provided.
+    $sb = new FilePath($this->sb);
+    $list = call_user_func_array([$sb, $method], $args)->paths($this->sb);
+    foreach ($control as $key => $item) {
+      $this->assertSame($item, $list[$key]);
+    }
+    $this->assertCount(count($control), $list);
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   */
+  public function testConstructWithExtensionAndPathToFileThrows() {
+    new FilePath($this->sb . '/temp.pdf', ['extension' => 'pdf']);
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   */
+  public function testConstructWithFilenameAsExtensionThrows() {
+    new FilePath($this->sb, ['extension' => 'temp.pdf']);
+  }
+
   public function testFileThatHasNoExtensionAndDoesntExistWorksOkay() {
     $cli = new FilePath($this->sb . '/controller', [
       'is_dir' => FALSE,
@@ -28,7 +96,7 @@ class FilePathTest extends PhpUnitTestCase {
    * @expectedException \Exception
    */
   public function testEnsureDirCantWriteThrows() {
-    $path = new FilePath($this->sb . 'do');
+    $path = FilePath::create($this->sb . 'do')->install();
     chmod($path->getPath(), '0000');
     FilePath::ensureDir($this->sb . 'do/re');
   }
@@ -99,32 +167,6 @@ class FilePathTest extends PhpUnitTestCase {
     $this->assertFileNotExists($path);
   }
 
-  /**
-   * @dataProvider DataForTestChildrenAndDescendentsReturnCorrectLevelsProvider
-   */
-  public function testChildrenAndDescendentsReturnCorrectLevels($method, $args, $control) {
-    // Setup a testing file structure.
-    $dir = new FilePath($this->sb);
-    $dir->put('tbd');
-    $dir->to('do.json')->save();
-    $dir->to('re.pdf')->save();
-
-    $grandChild = new FilePath($this->sb . 'alpha/mi.txt');
-    $grandChild->put('tbd')->save();
-
-    $greatGrandChild = new FilePath($this->sb . 'alpha/bravo/fa.txt');
-    $greatGrandChild->put('tbd')->save();
-
-    // Now run the test based on the data provided.
-    $sb = new FilePath($this->sb);
-    $list = call_user_func_array([$sb, $method], $args)->paths($this->sb);
-    foreach ($control as $key => $item) {
-      $this->assertSame($item, $list[$key]);
-    }
-    $this->assertCount(count($control), $list);
-  }
-
-
   public function testChildrenFindsDirsInDirWhenNoFilesInDir() {
     $sb = new FilePath($this->sb);
     $dir = $sb->getPath() . '/' . __FUNCTION__;
@@ -151,7 +193,7 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testUseIsDirOptionCreatesDirectionFromDotPath() {
-    $sb = new FilePath($this->sb . '/.taskcamp', ['is_dir' => TRUE]);
+    $sb = FilePath::create($this->sb . '/.taskcamp', ['is_dir' => TRUE])->install();
     $this->assertTrue(is_dir($sb->getPath()));
   }
 
@@ -566,36 +608,6 @@ class FilePathTest extends PhpUnitTestCase {
     $obj->destroy();
   }
 
-  /**
-   * @expectedException InvalidArgumentException
-   */
-  public function testConstructWithFilenameAsExtensionThrows() {
-    new FilePath($this->sb, ['extension' => 'temp.pdf']);
-  }
-
-  /**
-   * @expectedException InvalidArgumentException
-   */
-  public function testConstructWithExtensionAndPathToFileThrows() {
-    new FilePath($this->sb . '/temp.pdf', ['extension' => 'pdf']);
-  }
-
-  public function testConstructWithExtensionGeneratesTempNamePath() {
-    $obj = new FilePath($this->sb, ['extension' => 'pdf']);
-    $path = $obj->getPath();
-    $info = pathinfo($path);
-    $this->assertSame('pdf', $info['extension']);
-    $this->assertSame($this->sb, $info['dirname'] . '/');
-    $this->assertNotEmpty($info['filename']);
-
-    $obj = new FilePath($this->sb, ['extension' => '.pdf']);
-    $path = $obj->getPath();
-    $info = pathinfo($path);
-    $this->assertSame('pdf', $info['extension']);
-    $this->assertSame($this->sb, $info['dirname'] . '/');
-    $this->assertNotEmpty($info['filename']);
-  }
-
   public function testTempName() {
     $a = FilePath::tempName();
     $b = FilePath::tempName();
@@ -614,7 +626,7 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testDirExists() {
-    $file = new FilePath($this->sb . '/temp');
+    $file = FilePath::create($this->sb . '/temp')->install();
     $this->assertTrue($file->exists());
   }
 
@@ -637,19 +649,6 @@ class FilePathTest extends PhpUnitTestCase {
     catch (\Exception $exception) {
       throw $exception;
     }
-  }
-
-  public function testMoveFrom() {
-    $control = 'do.re.mi';
-    $source = new FilePath($this->sb . '/alpha/index.html');
-    $source->put($control)->save();
-
-    $destination = new FilePath($this->sb . '/bravo');
-    $destination->moveFrom($source);
-
-    $this->assertFileNotExists($this->sb . '/alpha/index.html');
-    $this->assertFileExists($this->sb . '/bravo/index.html');
-    $this->assertSame($control, file_get_contents($this->sb . '/bravo/index.html'));
   }
 
   public function testMove() {
@@ -851,7 +850,7 @@ class FilePathTest extends PhpUnitTestCase {
   public function testConstructorCreatesNestedDirs($subject) {
     $control = $this->sb . $subject;
     $this->assertFileNotExists($control);
-    new FilePath($control);
+    FilePath::create($control)->install();
     $this->assertFileExists(dirname($control));
   }
 
