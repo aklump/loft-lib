@@ -7,10 +7,17 @@
 
 namespace AKlump\LoftLib\Storage;
 
-use AKlump\LoftLib\Testing\PhpUnitTestCase;
 use AKlump\LoftLib\Code\LoftXmlElement;
+use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
+
+  public function _testFileThatHasNoExtension() {
+    $cli = new FilePath('controller', NULL, [
+      'is_dire' => FALSE,
+    ]);
+    $this->assertFalse(TRUE);
+  }
 
   /**
    * @dataProvider DataForTestChildrenAndDescendentsReturnCorrectLevelsProvider
