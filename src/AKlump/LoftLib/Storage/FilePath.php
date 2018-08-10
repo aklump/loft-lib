@@ -97,18 +97,32 @@ class FilePath implements PersistentInterface {
    */
   public function __construct($path, $options = []) {
     $options += [
-      'install' => TRUE,
-      'extension' => NULL,
+      'parents' => isset($options['install']) ? $options['install'] : TRUE,
+      'autoname' => isset($options['extension']) ? $options['extension'] : NULL,
     ];
+
+    // Generate the temporary name.
+    if (!empty($options['autoname'])) {
+      if (pathinfo($path, PATHINFO_EXTENSION)) {
+        throw new \InvalidArgumentException("When providing an extension, \$path must reference a directory.");
+      }
+
+      // Make sure the extension is not a filename or a path.
+      $test = explode('.', trim($options['autoname'], '.'));
+      if (count($test) > 1 || strpos($options['autoname'], '/') !== FALSE) {
+        throw new \InvalidArgumentException("\$extension appears to be a filename; it must only contain the extension, e.g. 'pdf', and no leading dot");
+      }
+      $path = rtrim($path, '/') . '/' . static::tempName($options['autoname']);
+    }
 
     // Detect the type from an existing file.
     if (file_exists($path)) {
-      $_type = empty($options['extension']) && is_dir($path) ? self::TYPE_DIR : self::TYPE_FILE;
+      $_type = empty($options['autoname']) && is_dir($path) ? self::TYPE_DIR : self::TYPE_FILE;
     }
 
     // Set the type based on $options or guessing.
     else {
-      $_ext = $options['extension'] ? $options['extension'] : pathinfo($path, PATHINFO_EXTENSION);
+      $_ext = $options['autoname'] ? $options['autoname'] : pathinfo($path, PATHINFO_EXTENSION);
       if (array_key_exists('type', $options)) {
         $_type = $options['type'];
       }
@@ -129,48 +143,10 @@ class FilePath implements PersistentInterface {
     $this->type = $_type;
     $path_is_dir = $_type === self::TYPE_DIR;
     $path = trim($path);
-    $this->config = $this->validateConfig($path, $options);
-
-    // Generate the temp name.
-    $extension = $this->config['extension'];
-    if ($extension) {
-      $path = rtrim($path, '/') . '/' . static::tempName($extension);
-    }
+    $this->config = $options;
 
     $this->dir = rtrim($path_is_dir ? $path : dirname($path), '/');
     $this->basename = $path_is_dir ? '' : trim(pathinfo($path, PATHINFO_BASENAME), '/ ');
-  }
-
-  private function validateConfig($path, array $config) {
-
-    // Assert $path references a directory, not a file.
-    if (!empty($config['extension'])) {
-      if (pathinfo($path, PATHINFO_EXTENSION)) {
-        throw new \InvalidArgumentException("When providing an extension, \$path must reference a directory.");
-      }
-
-      // Make sure the extension is not a filename or a path.
-      $test = explode('.', trim($config['extension'], '.'));
-      if (count($test) > 1 || strpos($config['extension'], '/') !== FALSE) {
-        throw new \InvalidArgumentException("\$extension appears to be a filename; it must only contain the extension, e.g. 'pdf', and no leading dot");
-      }
-    }
-
-    return $config;
-  }
-
-  /**
-   * Create all parent directories on this path.
-   *
-   * @return \AKlump\LoftLib\Storage\FilePath
-   *   Self for chaining.
-   */
-  public function install() {
-    $path = $this->getPath();
-    list($this->dir, $this->basename) = static::ensureDir($path, NULL, $this->config['type'] === self::TYPE_DIR);
-    $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
-
-    return $this;
   }
 
   /**
@@ -179,10 +155,14 @@ class FilePath implements PersistentInterface {
    * @param string $path Full path to directory or file. All parent directories
    *   will be created, unless permissions prevent it.
    * @param array $options Configuration options for the instance:
-   *  - extension string To leverage the tempName method, pass an extension
-   * string when $path is a dir and a tempnam filepath will be generated.
-   *  - install bool Defaults true.  Set this to false an no files or folders
-   * will be created until you call install().
+   *  - autoname string A file extension, e.g. 'pdf' that will be used to
+   *   generate a random filename based on tempnam().  $path must be a
+   *   directory.
+   *  - parents bool Defaults true.  When true, the parent directories will be
+   *   automatically created for files when you try to save, copy or move.  If
+   *   you set this to false, you must call ::install before calling any
+   *   storage methods on a filepath that points to a file whose parent
+   *   directories do not exist.
    *  - type int Used to indicate the type when the file or dir does not yet
    * exist. One of self::TYPE_DIR or self::TYPE_FILE.  If this is omitted and
    * an extension can be detected in $path, then this will default to fail,
@@ -195,6 +175,19 @@ class FilePath implements PersistentInterface {
     $class = __CLASS__;
 
     return new $class($path, $options);
+  }
+
+  /**
+   * Create all parent directories on this path.
+   *
+   * @return \AKlump\LoftLib\Storage\FilePath
+   *   Self for chaining.
+   */
+  public function install() {
+    list($this->dir, $this->basename) = static::ensureDir($this->getPath(), NULL, $this->config['type'] === self::TYPE_DIR);
+    $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
+
+    return $this;
   }
 
   /**
@@ -387,7 +380,7 @@ class FilePath implements PersistentInterface {
   public function save() {
     $this->validateBasename();
 
-    if ($this->config['install']) {
+    if ($this->config['parents']) {
       $this->install();
     }
 
@@ -743,7 +736,7 @@ class FilePath implements PersistentInterface {
       throw new \RuntimeException("\"$source\" does not exist; can't $op.");
     }
     $this->validateBasename();
-    if ($this->config['install']) {
+    if ($this->config['parents']) {
       $this->install();
     }
     if (!$function($source, ($d = $this->getPath()))) {

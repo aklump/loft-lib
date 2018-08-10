@@ -12,19 +12,6 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
 
-  public function testMoveFrom() {
-    $control = 'do.re.mi';
-    $source = new FilePath($this->sb . '/alpha/index.html');
-    $source->put($control)->save();
-
-    $destination = new FilePath($this->sb . '/bravo');
-    $destination->moveFrom($source);
-
-    $this->assertFileNotExists($this->sb . '/alpha/index.html');
-    $this->assertFileExists($this->sb . '/bravo/index.html');
-    $this->assertSame($control, file_get_contents($this->sb . '/bravo/index.html'));
-  }
-
   public function testConstructWithExtensionGeneratesTempNamePath() {
     $obj = new FilePath($this->sb, ['extension' => 'pdf']);
     $path = $obj->getPath();
@@ -39,6 +26,19 @@ class FilePathTest extends PhpUnitTestCase {
     $this->assertSame('pdf', $info['extension']);
     $this->assertSame($this->sb, $info['dirname'] . '/');
     $this->assertNotEmpty($info['filename']);
+  }
+
+  public function testMoveFrom() {
+    $control = 'do.re.mi';
+    $source = new FilePath($this->sb . '/alpha/index.html');
+    $source->put($control)->save();
+
+    $destination = new FilePath($this->sb . '/bravo');
+    $destination->moveFrom($source);
+
+    $this->assertFileNotExists($this->sb . '/alpha/index.html');
+    $this->assertFileExists($this->sb . '/bravo/index.html');
+    $this->assertSame($control, file_get_contents($this->sb . '/bravo/index.html'));
   }
 
   /**
