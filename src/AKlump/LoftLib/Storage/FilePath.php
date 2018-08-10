@@ -16,7 +16,7 @@ use AKlump\LoftLib\Code\ThrowableErrorsTrait;
  * In this first example we are using the object as a "directory" object.
  *
  * @code
- *   $dir = new FilePath('/to/my/files');
+ *   $dir = FilePath::create('/to/my/files');
  *
  *   //
  *   //
@@ -60,7 +60,7 @@ use AKlump\LoftLib\Code\ThrowableErrorsTrait;
  * passing a path to the filename, not the directory.
  *
  * @code
- *   $file = new FilePath('/to/my/file.json');
+ *   $file = FilePath::create('/to/my/file.json');
  *
  *   //
  *   //
@@ -93,30 +93,23 @@ class FilePath implements PersistentInterface {
   /**
    * FilePath constructor.
    *
-   * @param string $path Full path to directory or file. All parent directories
-   *   will be created, unless permissions prevent it.
-   * @param null $extension To leverage the tempName method, pass an extension,
-   *   and a filePath to a temp-named file will be created inside of
-   *   $path--note: $path must be a directory.
-   * @param array $options Configuration options for the instance:
-   * - install bool Defaults true.  Set this to false an no files or folders
-   *   will be created until you call install().
-   * - type int Used to indicate the type when the file or dir does not yet
-   *   exist. One of self::TYPE_DIR or self::TYPE_FILE.  If this is omitted and
-   *   an extension can be detected in $path, then this will default to fail,
-   *   otherwise to dir.
+   * @see ::create
    */
-  public function __construct($path, $extension = NULL, $options = []) {
-    $this->intention = func_get_args() + [NULL, NULL, []];
+  public function __construct($path, $options = []) {
+    $options += [
+      'install' => TRUE,
+      'extension' => NULL,
+    ];
+    $this->intention = [$path, $options['extension'], $options];
 
     // Detect the type from an existing file.
     if (file_exists($path)) {
-      $_type = empty($extension) && is_dir($path) ? self::TYPE_DIR : self::TYPE_FILE;
+      $_type = empty($options['extension']) && is_dir($path) ? self::TYPE_DIR : self::TYPE_FILE;
     }
 
     // Set the type based on $options or guessing.
     else {
-      $_ext = $extension ? $extension : pathinfo($path, PATHINFO_EXTENSION);
+      $_ext = $options['extension'] ? $options['extension'] : pathinfo($path, PATHINFO_EXTENSION);
       if (array_key_exists('type', $options)) {
         $_type = $options['type'];
       }
@@ -140,10 +133,28 @@ class FilePath implements PersistentInterface {
     }
   }
 
-  public static function create($path, $extension = NULL, $options = []) {
+  /**
+   * Factory method to create an instance of \AKlump\LoftLib\Storage\FilePath
+   *
+   * @param string $path Full path to directory or file. All parent directories
+   *   will be created, unless permissions prevent it.
+   * @param array $options Configuration options for the instance:
+   *  - extension string To leverage the tempName method, pass an extension
+   * string when $path is a dir and a tempnam filepath will be generated.
+   *  - install bool Defaults true.  Set this to false an no files or folders
+   * will be created until you call install().
+   *  - type int Used to indicate the type when the file or dir does not yet
+   * exist. One of self::TYPE_DIR or self::TYPE_FILE.  If this is omitted and
+   * an extension can be detected in $path, then this will default to fail,
+   * otherwise to dir.
+   *
+   * @return \AKlump\LoftLib\Storage\FilePath
+   *   A new instance of \AKlump\LoftLib\Storage\FilePath.
+   */
+  public static function create($path, $options = []) {
     $class = __CLASS__;
 
-    return new $class($path, $extension, $options);
+    return new $class($path, $options);
   }
 
   /**

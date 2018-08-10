@@ -13,12 +13,12 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 class FilePathTest extends PhpUnitTestCase {
 
   public function testFileThatHasNoExtensionAndDoesntExistWorksOkay() {
-    $cli = new FilePath($this->sb . '/controller', NULL, [
+    $cli = new FilePath($this->sb . '/controller', [
       'is_dir' => FALSE,
     ]);
     $this->assertSame(FilePath::TYPE_FILE, $cli->getType());
 
-    $cli = new FilePath($this->sb . '/controller', NULL, [
+    $cli = new FilePath($this->sb . '/controller', [
       'type' => FilePath::TYPE_FILE,
     ]);
     $this->assertSame(FilePath::TYPE_FILE, $cli->getType());
@@ -62,7 +62,7 @@ class FilePathTest extends PhpUnitTestCase {
     ];
     array_shift($subject);
     array_pop($subject);
-    $obj = new FilePath($this->sb, 'sh');
+    $obj = new FilePath($this->sb, ['extension' => 'sh']);
     $obj->putBash($subject)->save();
 
     $contents = file_get_contents($obj->getPath());
@@ -73,7 +73,7 @@ class FilePathTest extends PhpUnitTestCase {
    * @expectedException \RuntimeException
    */
   public function testFromOnFileThrows() {
-    $file = new FilePath($this->sb, 'json');
+    $file = new FilePath($this->sb, ['extension' => 'json']);
     $file->from('bravo.json');
   }
 
@@ -83,7 +83,7 @@ class FilePathTest extends PhpUnitTestCase {
       'echo "hello world"',
       '',
     ];
-    $obj = new FilePath($this->sb, 'sh');
+    $obj = new FilePath($this->sb, ['extension' => 'sh']);
     $obj->putBash($data)->save();
 
     $contents = file_get_contents($obj->getPath());
@@ -91,7 +91,7 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testDestroyFilepath() {
-    $obj = new FilePath($this->sb, 'pdf');
+    $obj = new FilePath($this->sb, ['extension' => 'pdf']);
     $this->assertSame(FilePath::TYPE_FILE, $obj->getType());
     $path = $obj->put('do')->save()->getPath();
     $this->assertFileExists($path);
@@ -151,12 +151,12 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testUseIsDirOptionCreatesDirectionFromDotPath() {
-    $sb = new FilePath($this->sb . '/.taskcamp', NULL, ['is_dir' => TRUE]);
+    $sb = new FilePath($this->sb . '/.taskcamp', ['is_dir' => TRUE]);
     $this->assertTrue(is_dir($sb->getPath()));
   }
 
   public function testInstallReturnsThis() {
-    $sb = new FilePath($this->sb, NULL, ['install' => FALSE]);
+    $sb = new FilePath($this->sb, ['install' => FALSE]);
     $this->assertSame($sb, $sb->install());
   }
 
@@ -402,7 +402,7 @@ class FilePathTest extends PhpUnitTestCase {
    * @expectedException \InvalidArgumentException
    */
   public function testOnFileToWithEmptyArgThrows() {
-    $file = new FilePath($this->sb, 'json');
+    $file = new FilePath($this->sb, ['extension' => 'json']);
     $file->to('');
   }
 
@@ -415,7 +415,7 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testToReturnsPathToANewFileObjectWhenFile() {
-    $file = new FilePath($this->sb, 'json');
+    $file = new FilePath($this->sb, ['extension' => 'json']);
     $renamed = $file->put('bla')->to('bravo.json');
     $this->assertNotSame($file, $renamed);
   }
@@ -438,7 +438,7 @@ class FilePathTest extends PhpUnitTestCase {
       'Hello world!',
       '',
     ];
-    $obj = new FilePath($this->sb, 'sh');
+    $obj = new FilePath($this->sb, ['extension' => 'sh']);
     $obj->putBash($subject)->save();
 
     $contents = file_get_contents($obj->getPath());
@@ -452,7 +452,7 @@ class FilePathTest extends PhpUnitTestCase {
       '',
     ];
     array_shift($subject);
-    $obj = new FilePath($this->sb, 'sh');
+    $obj = new FilePath($this->sb, ['extension' => 'sh']);
     $obj->putBash($subject)->save();
 
     $contents = file_get_contents($obj->getPath());
@@ -570,25 +570,25 @@ class FilePathTest extends PhpUnitTestCase {
    * @expectedException InvalidArgumentException
    */
   public function testConstructWithFilenameAsExtensionThrows() {
-    new FilePath($this->sb, 'temp.pdf');
+    new FilePath($this->sb, ['extension' => 'temp.pdf']);
   }
 
   /**
    * @expectedException InvalidArgumentException
    */
   public function testConstructWithExtensionAndPathToFileThrows() {
-    new FilePath($this->sb . '/temp.pdf', 'pdf');
+    new FilePath($this->sb . '/temp.pdf', ['extension' => 'pdf']);
   }
 
   public function testConstructWithExtensionGeneratesTempNamePath() {
-    $obj = new FilePath($this->sb, 'pdf');
+    $obj = new FilePath($this->sb, ['extension' => 'pdf']);
     $path = $obj->getPath();
     $info = pathinfo($path);
     $this->assertSame('pdf', $info['extension']);
     $this->assertSame($this->sb, $info['dirname'] . '/');
     $this->assertNotEmpty($info['filename']);
 
-    $obj = new FilePath($this->sb, '.pdf');
+    $obj = new FilePath($this->sb, ['extension' => '.pdf']);
     $path = $obj->getPath();
     $info = pathinfo($path);
     $this->assertSame('pdf', $info['extension']);
@@ -829,7 +829,7 @@ class FilePathTest extends PhpUnitTestCase {
   public function testConstructorDoesNotCreateNestedDirectoriesWhenInstallOptionIsFalseButInstallMethodDoes($subject) {
     $control = $this->sb . $subject;
     $this->assertFileNotExists($control);
-    $obj = new FilePath($control, NULL, ['install' => FALSE]);
+    $obj = new FilePath($control, ['install' => FALSE]);
     $this->assertFileNotExists(dirname($control));
     $obj->install();
     $this->assertFileExists(dirname($control));
@@ -841,7 +841,7 @@ class FilePathTest extends PhpUnitTestCase {
   public function testConstructorDoesNotCreateNestedDirectoriesWhenInstallOptionIsFalse($subject) {
     $control = $this->sb . $subject;
     $this->assertFileNotExists($control);
-    new FilePath($control, NULL, ['install' => FALSE]);
+    new FilePath($control, ['install' => FALSE]);
     $this->assertFileNotExists(dirname($control));
   }
 
