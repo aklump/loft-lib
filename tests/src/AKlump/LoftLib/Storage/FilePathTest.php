@@ -12,11 +12,91 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
 
-  public function _testFileThatHasNoExtension() {
-    $cli = new FilePath('controller', NULL, [
-      'is_dire' => FALSE,
+  public function testFileThatHasNoExtensionAndDoesntExistWorksOkay() {
+    $cli = new FilePath($this->sb . '/controller', NULL, [
+      'is_dir' => FALSE,
     ]);
-    $this->assertFalse(TRUE);
+    $this->assertSame(FilePath::TYPE_FILE, $cli->getType());
+
+    $cli = new FilePath($this->sb . '/controller', NULL, [
+      'type' => FilePath::TYPE_FILE,
+    ]);
+    $this->assertSame(FilePath::TYPE_FILE, $cli->getType());
+  }
+
+  /**
+   * @expectedException \Exception
+   */
+  public function testEnsureDirCantWriteThrows() {
+    $path = new FilePath($this->sb . 'do');
+    chmod($path->getPath(), '0000');
+    FilePath::ensureDir($this->sb . 'do/re');
+  }
+
+  public function testLoadOnFileAllowsMultipleTosToDifferntFilesWithSameContent() {
+    $path = $this->sb . 'do/re/mi';
+    FilePath::ensureDir($path);
+
+    $file_path = "$path/read.txt";
+    file_put_contents($file_path, 'stamp');
+
+    $file = new FilePath($file_path);
+    $file->load();
+
+    $this->assertSame('stamp', file_get_contents($file->to('fish.txt')
+      ->save()
+      ->getPath()));
+    $this->assertSame('stamp', file_get_contents($file->to('goat.txt')
+      ->save()
+      ->getPath()));
+    $this->assertSame('stamp', file_get_contents($file->to('eagle.txt')
+      ->save()
+      ->getPath()));
+  }
+
+  public function testPutBaseWithoutHeaderInDataAddsHeaderAndInsuresEndOfFileNewline() {
+    $control = $subject = [
+      '#!/usr/bin/env bash',
+      'echo "hello world"',
+      '',
+    ];
+    array_shift($subject);
+    array_pop($subject);
+    $obj = new FilePath($this->sb, 'sh');
+    $obj->putBash($subject)->save();
+
+    $contents = file_get_contents($obj->getPath());
+    $this->assertSame(implode(PHP_EOL, $control), $contents);
+  }
+
+  /**
+   * @expectedException \RuntimeException
+   */
+  public function testFromOnFileThrows() {
+    $file = new FilePath($this->sb, 'json');
+    $file->from('bravo.json');
+  }
+
+  public function testPutBaseWithHeaderInDataDoesntDoubleHeader() {
+    $data = [
+      '#!/usr/bin/env bash',
+      'echo "hello world"',
+      '',
+    ];
+    $obj = new FilePath($this->sb, 'sh');
+    $obj->putBash($data)->save();
+
+    $contents = file_get_contents($obj->getPath());
+    $this->assertSame(implode(PHP_EOL, $data), $contents);
+  }
+
+  public function testDestroyFilepath() {
+    $obj = new FilePath($this->sb, 'pdf');
+    $this->assertSame(FilePath::TYPE_FILE, $obj->getType());
+    $path = $obj->put('do')->save()->getPath();
+    $this->assertFileExists($path);
+    $obj->destroy();
+    $this->assertFileNotExists($path);
   }
 
   /**
@@ -281,36 +361,6 @@ class FilePathTest extends PhpUnitTestCase {
     return $tests;
   }
 
-  /**
-   * @expectedException \Exception
-   */
-  public function testEnsureDirCantWriteThrows() {
-    $path = new FilePath($this->sb . 'do');
-    chmod($path->getPath(), '0000');
-    FilePath::ensureDir($this->sb . 'do/re');
-  }
-
-  public function testLoadOnFileAllowsMultipleTosToDifferntFilesWithSameContent() {
-    $path = $this->sb . 'do/re/mi';
-    FilePath::ensureDir($path);
-
-    $file_path = "$path/read.txt";
-    file_put_contents($file_path, 'stamp');
-
-    $file = new FilePath($file_path);
-    $file->load();
-
-    $this->assertSame('stamp', file_get_contents($file->to('fish.txt')
-      ->save()
-      ->getPath()));
-    $this->assertSame('stamp', file_get_contents($file->to('goat.txt')
-      ->save()
-      ->getPath()));
-    $this->assertSame('stamp', file_get_contents($file->to('eagle.txt')
-      ->save()
-      ->getPath()));
-  }
-
   public function testPutOnDirAllowsMultipleTosToDifferntFilesWithSameContent() {
     $path = $this->sb . 'do/re/mi';
     $dir = new FilePath($path);
@@ -376,14 +426,6 @@ class FilePathTest extends PhpUnitTestCase {
     $this->assertNotSame($dir, $file);
   }
 
-  /**
-   * @expectedException \RuntimeException
-   */
-  public function testFromOnFileThrows() {
-    $file = new FilePath($this->sb, 'json');
-    $file->from('bravo.json');
-  }
-
   public function testFromReturnsNewFileObjectWhenDir() {
     $dir = new FilePath($this->sb . 'alpha');
     $file = $dir->from('bla.txt');
@@ -415,34 +457,6 @@ class FilePathTest extends PhpUnitTestCase {
 
     $contents = file_get_contents($obj->getPath());
     $this->assertSame(implode(PHP_EOL, $control), $contents);
-  }
-
-  public function testPutBaseWithoutHeaderInDataAddsHeaderAndInsuresEndOfFileNewline() {
-    $control = $subject = [
-      '#!/usr/bin/env bash',
-      'echo "hello world"',
-      '',
-    ];
-    array_shift($subject);
-    array_pop($subject);
-    $obj = new FilePath($this->sb, 'sh');
-    $obj->putBash($subject)->save();
-
-    $contents = file_get_contents($obj->getPath());
-    $this->assertSame(implode(PHP_EOL, $control), $contents);
-  }
-
-  public function testPutBaseWithHeaderInDataDoesntDoubleHeader() {
-    $data = [
-      '#!/usr/bin/env bash',
-      'echo "hello world"',
-      '',
-    ];
-    $obj = new FilePath($this->sb, 'sh');
-    $obj->putBash($data)->save();
-
-    $contents = file_get_contents($obj->getPath());
-    $this->assertSame(implode(PHP_EOL, $data), $contents);
   }
 
   public function testGetJsonWithTrueArgumentReturnsArrayFalseReturnsObjectDefaultsToObject() {
@@ -550,15 +564,6 @@ class FilePathTest extends PhpUnitTestCase {
     $this->assertSame(FilePath::TYPE_DIR, $obj->getType());
     $this->assertFileExists($obj->getPath());
     $obj->destroy();
-  }
-
-  public function testDestroyFilepath() {
-    $obj = new FilePath($this->sb, 'pdf');
-    $this->assertSame(FilePath::TYPE_FILE, $obj->getType());
-    $path = $obj->put('do')->save()->getPath();
-    $this->assertFileExists($path);
-    $obj->destroy();
-    $this->assertFileNotExists($path);
   }
 
   /**

@@ -93,26 +93,48 @@ class FilePath implements PersistentInterface {
   /**
    * FilePath constructor.
    *
-   * @param string $path Full path to directory or file. All parent
-   *                          directories will be created, unless permissions
-   *                          prevent it.
-   * @param null $extension To leverage the tempName method, pass an
-   *                          extension, and a filePath to a temp-named file
-   *                          will be created inside of $path--note: $path
-   *                          must be a directory.
+   * @param string $path Full path to directory or file. All parent directories
+   *   will be created, unless permissions prevent it.
+   * @param null $extension To leverage the tempName method, pass an extension,
+   *   and a filePath to a temp-named file will be created inside of
+   *   $path--note: $path must be a directory.
    * @param array $options Configuration options for the instance:
-   *                          - install bool Defaults true.  Set this to false
-   *   an no files or folders will be created until you call install().
-   *
-   *                          - is_dir bool Defaults to null. Set this to true
-   *   and $path will be seen as a directory.
+   * - install bool Defaults true.  Set this to false an no files or folders
+   *   will be created until you call install().
+   * - type int Used to indicate the type when the file or dir does not yet
+   *   exist. One of self::TYPE_DIR or self::TYPE_FILE.  If this is omitted and
+   *   an extension can be detected in $path, then this will default to fail,
+   *   otherwise to dir.
    */
   public function __construct($path, $extension = NULL, $options = []) {
     $this->intention = func_get_args() + [NULL, NULL, []];
+
+    // Detect the type from an existing file.
+    if (file_exists($path)) {
+      $_type = empty($extension) && is_dir($path) ? self::TYPE_DIR : self::TYPE_FILE;
+    }
+
+    // Set the type based on $options or guessing.
+    else {
+      $_ext = $extension ? $extension : pathinfo($path, PATHINFO_EXTENSION);
+      if (array_key_exists('type', $options)) {
+        $_type = $options['type'];
+      }
+      else {
+        // Legacy support.
+        $_is_dir = array_key_exists('is_dir', $options) ? $options['is_dir'] : NULL;
+        if (is_null($_is_dir)) {
+          $_is_dir = empty($_ext);
+        }
+        $_type = $_is_dir ? self::TYPE_DIR : self::TYPE_FILE;
+      }
+    }
+
     $this->intention[2] += [
       'install' => TRUE,
-      'is_dir' => NULL,
+      'type' => $_type,
     ];
+
     if ($this->intention[2]['install']) {
       $this->install();
     }
@@ -140,40 +162,35 @@ class FilePath implements PersistentInterface {
   /**
    * Ensure all directories in $path exist, if possible.
    *
-   * @param      $path string Expecting a directory, but file works if it has
-   *                   an extension as dirName() will be used.  However, if
-   *                   the file does not have an extension, it will be assumed
-   *                   it is a dirName, and that may be unexpected.  It is
-   *                   most consistent to always pass a path to a directory
-   *                   and avoid including the file component of the path.
+   * @param      $path string An absolute filepath.  All parent directories are
+   *   created.  If you pass a path to a file, be sure to set $path_is_dir to
+   *   false and dirname() will be use on $path.
    * @param int $mode
+   *   The file permissions to use when creating directories.
    * @param bool $path_is_dir
-   *                   Set this to true and $path will be taken as a directory,
-   *   no matter the format.
+   *   Set this to false if $path points to a file, not a directory.
    *
    * @return array - 0 The directory with trailing / removed
    * - 0 The directory with trailing / removed
-   * - 1 The basename if exists.
+   * - 1 The basename, if a file; for directories this is null.
    *
    * @throws \AKlump\LoftLib\Code\AKlump\LoftLib\Code\StandardPhpErrorException
    */
-  public static function ensureDir($path, $mode = 0777, $path_is_dir = FALSE) {
+  public static function ensureDir($path, $mode = 0777, $path_is_dir = TRUE) {
     if (empty($path)) {
       throw new \InvalidArgumentException("\$path cannot be empty.");
     }
     $mode = $mode ?: 0777;
-    $info = pathinfo($path);
-    $basename = '';
-    if ($path_is_dir !== TRUE && !empty($info['extension'])) {
-      $path = $info['dirname'];
-      $basename = $info['basename'];
-    }
+    $path = trim($path);
+    $dirname = rtrim($path_is_dir ? $path : dirname($path), '/');
+    $basename = $path_is_dir ? '' : trim(pathinfo($path, PATHINFO_BASENAME), '/ ');
+    $path = $dirname . '/' . $basename;
 
-    if (!file_exists($path)) {
+    if (!is_dir($dirname)) {
       $status = NULL;
       try {
-        static::throwErrors(function () use (&$status, $path, $mode) {
-          mkdir($path, $mode, TRUE);
+        static::throwErrors(function () use (&$status, $dirname, $mode) {
+          mkdir($dirname, $mode, TRUE);
         });
       }
       catch (\Exception $exception) {
@@ -183,7 +200,7 @@ class FilePath implements PersistentInterface {
       }
     }
 
-    return array(rtrim($path, '/'), trim($basename));
+    return array($dirname, $basename);
   }
 
   /**
@@ -278,7 +295,7 @@ class FilePath implements PersistentInterface {
    * @return string Path to dir (or file if $this->basename).
    */
   public function getPath() {
-    $path = $this->dir;
+    $path = rtrim($this->dir, '/');
     if ($this->basename) {
       $path .= '/' . $this->basename;
     }
@@ -617,7 +634,7 @@ class FilePath implements PersistentInterface {
     list($path, $extension, $options) = $this->intention;
     if ($extension) {
 
-      // Try to make sure $path references a directory, not a file.
+      // Assert $path references a directory, not a file.
       if (pathinfo($path, PATHINFO_EXTENSION)) {
         throw new \InvalidArgumentException("When providing an extension, \$path must reference a directory.");
       }
@@ -627,9 +644,9 @@ class FilePath implements PersistentInterface {
       if (count($test) > 1 || strpos($extension, '/') !== FALSE) {
         throw new \InvalidArgumentException("\$extension appears to be a filename; it must only contain the extension, e.g. 'pdf', and no leading dot");
       }
-      $path .= '/' . static::tempName($extension);
+      $path = rtrim($path, '/') . '/' . static::tempName($extension);
     }
-    list($this->dir, $this->basename) = static::ensureDir($path, NULL, $options['is_dir']);
+    list($this->dir, $this->basename) = static::ensureDir($path, NULL, $options['type'] === self::TYPE_DIR);
     $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
 
     return $this;
