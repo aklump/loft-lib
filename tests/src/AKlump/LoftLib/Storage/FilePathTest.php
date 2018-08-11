@@ -12,6 +12,17 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
 
+  public function testGetHash() {
+    $hash = FilePath::create($this->sb . '/hash/demo.json')
+      ->putJson([
+        'weather' => 'cloudy',
+        'temperature' => 'mild',
+      ])
+      ->save()
+      ->getHash();
+    $this->assertSame('04f11f47db99ac6707931d78d70b418c', $hash);
+  }
+
   public function testConstructWithExtensionGeneratesTempNamePath() {
     $obj = new FilePath($this->sb, ['extension' => 'pdf']);
     $path = $obj->getPath();

@@ -801,4 +801,14 @@ class FilePath implements PersistentInterface {
 
     return $files;
   }
+
+  /**
+   * Return a hash of the file contents.
+   *
+   * @return string
+   *   The hashed file contents.
+   */
+  public function getHash() {
+    return md5_file($this->getPath());
+  }
 }
