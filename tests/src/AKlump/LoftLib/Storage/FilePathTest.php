@@ -12,6 +12,19 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class FilePathTest extends PhpUnitTestCase {
 
+  public function testCopyFromWithDifferentBasenames() {
+    $source = new FilePath($this->sb . '/alpha/index.html');
+    $source->put('do')->save();
+
+    $destination = new FilePath($this->sb . '/bravo/index_bu.html');
+    $destination->copyFrom($source);
+
+    $this->assertFileExists($this->sb . '/alpha/index.html');
+    $this->assertFileNotExists($this->sb . '/bravo/index.html');
+    $this->assertFileExists($this->sb . '/bravo/index_bu.html');
+    $this->assertSame('do', file_get_contents($this->sb . '/bravo/index_bu.html'));
+  }
+
   public function testGetHash() {
     $hash = FilePath::create($this->sb . '/hash/demo.json')
       ->putJson([

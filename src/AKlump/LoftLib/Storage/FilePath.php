@@ -506,7 +506,9 @@ class FilePath implements PersistentInterface {
       $source = new FilePath($source, NULL, ['install' => FALSE]);
     }
 
-    return $this->to($source->getBasename())
+    $basename = $this->getType() === self::TYPE_FILE ? $this->getBasename() : $source->getBasename();
+
+    return $this->to($basename)
       ->_copyOrMove('copy', 'copy', $source);
   }
 
