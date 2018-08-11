@@ -37,11 +37,11 @@
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-html" target="./tests/code-coverage" lowUpperBound="35"
-             highLowerBound="70"/>
-        <log type="tap" target="./tests/logs/junit.tap"/>
-        <log type="junit" target="./tests/logs/junit.xml" logIncompleteSkipped="false"/>
-        <log type="testdox-html" target="./tests/logs/testdox.html"/>
-        <log type="testdox-text" target="./tests/logs/testdox.txt"/>
+        <!--<log type="coverage-html" target="./tests/code-coverage" lowUpperBound="35"-->
+             <!--highLowerBound="70"/>-->
+        <!--<log type="tap" target="./tests/logs/junit.tap"/>-->
+        <!--<log type="junit" target="./tests/logs/junit.xml" logIncompleteSkipped="false"/>-->
+        <!--<log type="testdox-html" target="./tests/logs/testdox.html"/>-->
+        <!--<log type="testdox-text" target="./tests/logs/testdox.txt"/>-->
     </logging>
 </phpunit>
