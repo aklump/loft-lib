@@ -96,7 +96,7 @@ class FilePathTest extends PhpUnitTestCase {
    * @expectedException \Exception
    */
   public function testEnsureDirCantWriteThrows() {
-    $path = FilePath::create($this->sb . 'do')->install();
+    $path = FilePath::create($this->sb . 'do')->parents();
     chmod($path->getPath(), '0000');
     FilePath::ensureDir($this->sb . 'do/re');
   }
@@ -193,13 +193,14 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testUseIsDirOptionCreatesDirectionFromDotPath() {
-    $sb = FilePath::create($this->sb . '/.taskcamp', ['is_dir' => TRUE])->install();
+    $sb = FilePath::create($this->sb . '/.taskcamp', ['is_dir' => TRUE])
+      ->parents();
     $this->assertTrue(is_dir($sb->getPath()));
   }
 
   public function testInstallReturnsThis() {
     $sb = new FilePath($this->sb, ['install' => FALSE]);
-    $this->assertSame($sb, $sb->install());
+    $this->assertSame($sb, $sb->parents());
   }
 
   /**
@@ -626,7 +627,7 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function testDirExists() {
-    $file = FilePath::create($this->sb . '/temp')->install();
+    $file = FilePath::create($this->sb . '/temp')->parents();
     $this->assertTrue($file->exists());
   }
 
@@ -830,7 +831,7 @@ class FilePathTest extends PhpUnitTestCase {
     $this->assertFileNotExists($control);
     $obj = new FilePath($control, ['install' => FALSE]);
     $this->assertFileNotExists(dirname($control));
-    $obj->install();
+    $obj->parents();
     $this->assertFileExists(dirname($control));
   }
 
@@ -850,7 +851,7 @@ class FilePathTest extends PhpUnitTestCase {
   public function testConstructorCreatesNestedDirs($subject) {
     $control = $this->sb . $subject;
     $this->assertFileNotExists($control);
-    FilePath::create($control)->install();
+    FilePath::create($control)->parents();
     $this->assertFileExists(dirname($control));
   }
 

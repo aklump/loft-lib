@@ -183,7 +183,7 @@ class FilePath implements PersistentInterface {
    * @return \AKlump\LoftLib\Storage\FilePath
    *   Self for chaining.
    */
-  public function install() {
+  public function parents() {
     list($this->dir, $this->basename) = static::ensureDir($this->getPath(), NULL, $this->config['type'] === self::TYPE_DIR);
     $this->type = empty($this->basename) ? static::TYPE_DIR : static::TYPE_FILE;
 
@@ -381,7 +381,7 @@ class FilePath implements PersistentInterface {
     $this->validateBasename();
 
     if ($this->config['parents']) {
-      $this->install();
+      $this->parents();
     }
 
     if (@file_put_contents($this->getPath(), $this->contents) === FALSE) {
@@ -737,7 +737,7 @@ class FilePath implements PersistentInterface {
     }
     $this->validateBasename();
     if ($this->config['parents']) {
-      $this->install();
+      $this->parents();
     }
     if (!$function($source, ($d = $this->getPath()))) {
       throw new \RuntimeException("Could not $op \"$source\" to \"$d\"");
