@@ -65,12 +65,29 @@ class Color {
    * @param string $color The foreground or foreground/background color, e.g.
    *   'green' or 'green on white'.
    * @param string $string The string to wrap with color.
-   * @param null|0|1   $intensity null for default, 1 for more intensity, 0 for
-   *   less.
+   * @param null|0|1 $intensity
+   *   null for default, 1 for more intensity, 0 for less.
    *
-   * @return string The color wrapped string ready for print or echo.
+   * @return string
+   *   The color wrapped string ready for print or echo.
    */
   public static function wrap($color, $string, $intensity = NULL) {
+    return static::start($color, $intensity) . $string . static::stop();
+  }
+
+  /**
+   * Initiate color output.
+   *
+   * @param string $color
+   *   The foreground or foreground/background color, e.g.
+   *   'green' or 'green on white'.
+   * @param null|0|1 $intensity
+   *   null for default, 1 for more intensity, 0 for less.
+   *
+   * @return string
+   *   The characters needed to initiate color output.
+   */
+  public static function start($color, $intensity = NULL) {
     list ($foreground, $background) = explode(' on ', strtolower($color)) + [
       NULL,
       NULL,
@@ -85,15 +102,23 @@ class Color {
 
     list ($foreground, $intensityDefault) = static::$colors[$foreground];
     $intensity = $intensity ? $intensity : $intensityDefault;
-
-    $output = [];
     $output[] = "\033[" . $intensity . ';' . $foreground . 'm';
     if ($background) {
       $background = static::$backgrounds[$background];
       $output[] = "\033[" . $background . 'm';
     }
-    $output[] = $string . "\033[0m";
 
     return implode('', $output);
   }
+
+  /**
+   * Cease color output.
+   *
+   * @return string
+   *   The characters needed to stop color output.
+   */
+  public static function stop() {
+    return "\033[0m";
+  }
+
 }
