@@ -57,6 +57,7 @@ class Color {
     'magenta' => 45,
     'cyan' => 46,
     'light gray' => 47,
+    'light grey' => 47,
   );
 
   /**
@@ -73,6 +74,34 @@ class Color {
    */
   public static function wrap($color, $string, $intensity = NULL) {
     return static::start($color, $intensity) . $string . static::stop();
+  }
+
+  /**
+   * Remove the color characters from the front and back of a string.
+   *
+   * @param string $string
+   *   The string to remove color chars from.
+   *
+   * @return string
+   *   The string with color chars removed.
+   */
+  public static function unwrap($string) {
+    return preg_replace("/\e\[[\d;]*?m/", "", $string);
+  }
+
+  /**
+   * Return an accurate string count regardless of color wrapping.
+   *
+   * @param string $string
+   *   A string to count chars, which may be color wrapped.
+   *
+   * @return int
+   *   The length of the string.
+   */
+  public static function strlen($string) {
+    $string = static::unwrap($string);
+
+    return strlen($string);
   }
 
   /**
