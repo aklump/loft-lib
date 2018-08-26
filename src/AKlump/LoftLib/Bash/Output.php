@@ -10,7 +10,7 @@ namespace AKlump\LoftLib\Bash;
 class Output {
 
   /**
-   * Return an array in list form with nice bullets.
+   * Return an array in tree form with nice bullets.
    *
    * @param array $items
    *   The array of items.
@@ -18,7 +18,7 @@ class Output {
    * @return string
    *   The string to output.
    */
-  public static function list(array $items) {
+  public static function tree(array $items) {
     $build = [];
     foreach ($items as $index => $item) {
       if ($index + 1 === count($items)) {
