@@ -82,6 +82,30 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
 
     $tests[] = array(
       [
+        'declare -a config_keys=("images")',
+        'declare -a config_keys___images=("types")',
+        'declare -a config_keys___images___types=("bitmap")',
+        'declare -a config___images___types___bitmap=("jpg" "png" "gif")',
+        'declare -a config_keys___images___types___bitmap=("0" "1" "2")',
+        'config___images___types___bitmap___0="jpg"',
+        'config___images___types___bitmap___1="png"',
+        'config___images___types___bitmap___2="gif"',
+      ],
+      [
+        'images' => [
+          'types' => [
+            'bitmap' => [
+              "jpg",
+              "png",
+              "gif",
+            ],
+          ],
+        ],
+      ],
+    );
+
+    $tests[] = array(
+      [
         'declare -a config_keys=("version")',
         'config___version="1.0"',
       ],
