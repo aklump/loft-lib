@@ -103,7 +103,7 @@ class Configuration {
   private function quoteValue($value, $force = FALSE) {
     $value = str_replace('"', '\"', $value);
 
-    if (!$force && is_numeric($value)) {
+    if (!$force && is_numeric($value) && strlen($value) === strlen($value * 1)) {
       $value = $value * 1;
     }
     elseif (!$force && in_array($value, ['true', 'false', 'null'])) {
@@ -168,10 +168,8 @@ class Configuration {
     elseif ($value === FALSE) {
       $value = 'false';
     }
-    elseif (is_numeric($value)) {
-      $value *= 1;
-    }
 
     return $value;
   }
+
 }

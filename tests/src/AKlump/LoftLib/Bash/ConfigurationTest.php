@@ -20,6 +20,21 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
   public function dataForTestGetVarEvalCodeProvider() {
     $tests = array();
     $tests[] = array(
+      'version="1.0.5"',
+      'version',
+      '1.0.5',
+    );
+    $tests[] = array(
+      'version=1',
+      'version',
+      1.0,
+    );
+    $tests[] = array(
+      'version="1.0"',
+      'version',
+      '1.0',
+    );
+    $tests[] = array(
       'declare -a robin=()',
       'robin',
       array(),
@@ -33,11 +48,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
       'declare -a robin=("whack")',
       'robin',
       array('whack'),
-    );
-    $tests[] = array(
-      'robin=4',
-      'robin',
-      '4',
     );
     $tests[] = array(
       'robin="batman"',
@@ -61,7 +71,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
     $this->assertSame('false', Configuration::typecast(FALSE));
     $this->assertSame('lorem', Configuration::typecast('lorem'));
     $this->assertSame(17, Configuration::typecast(17));
-    $this->assertSame(17, Configuration::typecast('17'));
+    $this->assertSame('17', Configuration::typecast('17'));
   }
 
   /**
@@ -69,6 +79,14 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase {
    */
   public function dataForTestFlattenReturnsArrayProvider() {
     $tests = array();
+
+    $tests[] = array(
+      [
+        'declare -a config_keys=("version")',
+        'config___version="1.0"',
+      ],
+      ['version' => "1.0"],
+    );
 
     $tests[] = array(
       [
