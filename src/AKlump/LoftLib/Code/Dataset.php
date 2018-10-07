@@ -41,6 +41,8 @@ abstract class Dataset implements DatasetInterface {
    */
   const REGEX_DATEISO8601 = '/^\d{4}\-\d{2}\-\d{2}(?:\T| )\d{2}\:\d{2}.*/';
 
+  protected static $json_schemas;
+
   protected static $schemas;
 
   /**
@@ -80,35 +82,13 @@ abstract class Dataset implements DatasetInterface {
   }
 
   /**
-   * Set the schema from a filepath.
+   * Return the absolute path to the JSON schema file.
    *
-   * @param string $path_to_schema
-   *   The filepath to the JSON schema defining this class.
-   *
-   * @return \AKlump\LoftLib\Code\DatasetInterface
-   *   This instance.
+   * @return string
+   *   The absolute path to the json schema file which defines this class.
    */
-  public function setSchemaFromFile($path_to_schema) {
-
-
-    return $this->setSchema(file_get_contents($path_to_schema));
-  }
-
-  /**
-   * Set the schema from JSON.
-   *
-   * @param string $json
-   *   The schema JSON.
-   *
-   * @return \AKlump\LoftLib\Code\DatasetInterface
-   *   This instance.
-   */
-  public function setSchema($json) {
-
-
-    $this->jsonSchema = $schema;
-
-    return $this;
+  protected static function pathToJsonSchema() {
+    return NULL;
   }
 
   /**
@@ -122,18 +102,27 @@ abstract class Dataset implements DatasetInterface {
    *   This instance.
    */
   protected static function jsonSchema() {
-    $path_to_schema = static::getPathToJsonSchema();
-    if (!file_exists($path_to_schema)) {
-      throw new \InvalidArgumentException("Schema file does not exist: $path_to_schema");
-    }
-    if (!is_readable($path_to_schema)) {
-      throw new \InvalidArgumentException("Cannot read schema file: $path_to_schema");
-    }
-    if (!($schema = json_decode(file_get_contents($path_to_schema)))) {
-      throw new \InvalidArgumentException("Provided schema is invalid JSON.");
+    $cid = get_called_class();
+    if (empty(static::$json_schemas[$cid])) {
+      if (defined('static::JSON_SCHEMA')) {
+        $json = static::JSON_SCHEMA;
+      }
+      else {
+        $path_to_schema = static::pathToJsonSchema();
+        if (!file_exists($path_to_schema)) {
+          throw new \InvalidArgumentException("Schema file does not exist: $path_to_schema");
+        }
+        if (!is_readable($path_to_schema)) {
+          throw new \InvalidArgumentException("Cannot read schema file: $path_to_schema");
+        }
+        $json = file_get_contents($path_to_schema);
+      }
+      if (!(static::$json_schemas[$cid] = json_decode($json))) {
+        throw new \InvalidArgumentException("Provided schema is invalid JSON.");
+      }
     }
 
-    return $schema;
+    return static::$json_schemas[$cid];
   }
 
   public static function create(array $dataset = []) {
@@ -303,7 +292,6 @@ abstract class Dataset implements DatasetInterface {
           $type = reset($item['types']);
 
           return static::getTypeDefault($type);
-
         }, static::schemaRemoveAliases($schema));
       array_walk($defaults, function ($value, $key) use ($walkAliases, &$schema) {
         $walkAliases($key, $schema, function ($alias) use ($value, &$schema) {
@@ -463,7 +451,9 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function acceptKeys() {
-    return [];
+    $keys = array_keys((array) static::jsonSchema()->properties);
+
+    return $keys;
   }
 
   /**
@@ -476,14 +466,14 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function examples() {
-    $method = get_called_class() . ':' . __METHOD__;
-    throw new \RuntimeException("$method must be implemented.");
+    return json_decode(json_encode(static::jsonSchema()->examples), TRUE);
   }
 
   /**
    * Define the required accept for the dataset.
    *
    * @return array
+   *   An array of keys to require.
    *
    * @codeCoverageIgnore
    */
@@ -502,8 +492,39 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function match() {
-    $method = get_called_class() . ':' . __METHOD__;
-    throw new \RuntimeException("$method must be implemented.");
+    $match = [];
+    foreach (static::jsonSchema()->properties as $name => $item) {
+      if (isset($item->pattern)) {
+        static::removeAliasKeysFromPropertyKeyDefinition($name);
+        $match[$name] = static::runtimeEval($item->pattern);
+      }
+    }
+
+    return $match;
+  }
+
+  /**
+   * Process $value if it's a static:: call and return the computed value.
+   *
+   * @param mixed $value
+   *   The value that may be processed if it begins with "static::".
+   *
+   * @return mixed
+   *   The original or processed value, if applicable.
+   */
+  private static function runtimeEval($value) {
+    if (!is_string($value) || strpos($value, 'static::') !== 0) {
+      return $value;
+    }
+
+    $value = preg_replace_callback("/static::([^\s\"]+)/", function ($eval) {
+      $eval = str_replace('static', static::class, $eval[0]);
+      $eval = 'return ' . rtrim($eval, ';') . ';';
+
+      return eval($eval);
+    }, $value);
+
+    return $value;
   }
 
   /**
@@ -514,8 +535,33 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function defaults() {
-    $method = get_called_class() . ':' . __METHOD__;
-    throw new \RuntimeException("$method must be implemented.");
+    $defaults = [];
+    foreach (static::jsonSchema()->properties as $name => $item) {
+      static::removeAliasKeysFromPropertyKeyDefinition($name);
+      if (isset($item->default)) {
+        $defaults[$name] = static::runtimeEval($item->default);
+      }
+      else {
+        $type = $item->type;
+        $type = is_array($type) ? reset($type) : $type;
+        $defaults[$name] = static::getTypeDefault($type);
+      }
+    }
+
+    return $defaults;
+  }
+
+  /**
+   * Remove any aliases defined in a key.
+   *
+   * A key defined as mi:me:moi will be reduced to mi.
+   *
+   * @param string &$name
+   *   The property key to be processed.
+   */
+  private static function removeAliasKeysFromPropertyKeyDefinition(&$name) {
+    $name = explode(':', $name);
+    $name = reset($name);
   }
 
   /**
@@ -528,8 +574,15 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function types() {
-    $method = get_called_class() . ':' . __METHOD__;
-    throw new \RuntimeException("$method must be implemented.");
+    return array_map(function ($item) {
+      if (!isset($item->type)) {
+        return 'string';
+      }
+
+      $type = is_array($item->type) ? implode('|', $item->type) : $item->type;
+
+      return $type;
+    }, (array) static::jsonSchema()->properties);
   }
 
   /**
@@ -540,7 +593,15 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function describe() {
-    return [];
+    $descriptions = [];
+    foreach (static::jsonSchema()->properties as $name => $item) {
+      if (isset($item->description)) {
+        static::removeAliasKeysFromPropertyKeyDefinition($name);
+        $descriptions[$name] = $item->description;
+      }
+    }
+
+    return $descriptions;
   }
 
   protected static function getNotMasterAliases($alias) {

@@ -6,6 +6,18 @@ use AKlump\LoftLib\Testing\DatasetTestBase;
 
 class DatasetAlphaTest extends DatasetTestBase {
 
+  public function testGetDefaultReturnsMasterValueWhenAnyAliasUsed() {
+    DatasetAlpha::getDefault('me');
+    $this->assertSame('myself', DatasetAlpha::getDefault('me'));
+    $this->assertSame('myself', DatasetAlpha::getDefault('mi'));
+    $this->assertSame('myself', DatasetAlpha::getDefault('moi'));
+  }
+
+  public function testJsonIncludesDefaults() {
+    $obj = new TestingToStringIncludesDefaults(['id' => 5]);
+    $this->assertSame('{"id":5,"version":"1.2.5"}', strval($obj));
+  }
+
   /**
    * @expectedException InvalidArgumentException
    */
@@ -31,11 +43,6 @@ class DatasetAlphaTest extends DatasetTestBase {
     $this->assertNotSame($obj, $obj2);
   }
 
-  public function testJsonIncludesDefaults() {
-    $obj = new TestingToStringIncludesDefaults(['id' => 5]);
-    $this->assertSame('{"id":5,"version":"1.2.5"}', strval($obj));
-  }
-
   /**
    * @expectedException Exception
    */
@@ -58,12 +65,6 @@ class DatasetAlphaTest extends DatasetTestBase {
    */
   public function testGetDefaultWithBogusKeyThrows() {
     DatasetAlpha::getDefault('bogus');
-  }
-
-  public function testGetDefaultReturnsMasterValueWhenAnyAliasUsed() {
-    $this->assertSame('myself', DatasetAlpha::getDefault('me'));
-    $this->assertSame('myself', DatasetAlpha::getDefault('mi'));
-    $this->assertSame('myself', DatasetAlpha::getDefault('moi'));
   }
 
   public function testGetterWithAliasReturnsValue() {
@@ -337,24 +338,6 @@ class DatasetAlphaTest extends DatasetTestBase {
 
 class TestingToStringIncludesDefaults extends Dataset {
 
-  protected static function acceptKeys() {
-    return ['id', 'version'];
-  }
-
-  protected static function requireKeys() {
-    return ['id'];
-  }
-
-  protected static function defaults() {
-    return ['version' => '1.2.5'];
-  }
-
-  protected static function types() {
-    return ['id' => 'integer'];
-  }
-
-  protected static function match() {
-    return [];
-  }
+  const JSON_SCHEMA = '{"$schema": "http://json-schema.org/draft-07/schema#","type":"object","required":["id"],"properties":{"id":{"type":"integer"},"version":{"type":"string","default":"1.2.5"}},"additionalProperties":false}';
 
 }

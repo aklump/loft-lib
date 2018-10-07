@@ -1,16 +1,28 @@
 # Dataset
 
+An PHP class to use for data objects, using JSON schema as a validation structure.
+
 ## Quick Start
 
-1. First create a class that extends `Dataset`. It must implement these protected methods, which define the schema of the dataset.
-    
-    1. acceptKeys
-    1. requireKeys
-    5. describe
-    3. defaults
-    4. types
-    2. match
-    
+1. Create a class that extends `Dataset`.
+1. Now define the json schema.  A simple method is to supply a class constant `JSON_SCHEMA` with the schema value:
+
+        class SimpleExample extends Dataset {
+        
+          const JSON_SCHEMA = '{"type": "object","required":["id"],"id":{"type":"integer"},"version":{"type":"string","default":"1.2.5"}}';
+        
+        }  
+  
+1. Most times however, your schema will live in a separate file.  Therefore you will not define the class constant `JSON_SCHEMA`, rather provide the path to the json schema as the return value of the public static method `pathToJsonSchema`.  You may follow the convention of appending `.schema.json` to the classname, if you wish, as shown here:
+
+       /**
+        * {@inheritdoc}
+        */
+       protected static function pathToJsonSchema() {
+         return __DIR__ . '/DatasetAlpha.schema.json';
+       }
+ 
+1. Now create a [json schema file](https://json-schema.org/latest/json-schema-validation.html#rfc.section.10) to define your dataset at the path defined above.   
 3. Then implement an instance in your code like this:
     
         <?php
@@ -18,10 +30,20 @@
         ...
         try {
             $timer = Timer::dataset($data)->validate()->throwFirstProblem();
-          } catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             // Do something if validation failed.
         }
 
+### Using PHP class members in your JSON code with `static::`
+
+You can provide class methods, constants, etc in your JSON schema files and they will be evaluated at runtime.  For example, here we provide the regex pattern for the `date` property with a class constant, and the `default` value with a class method.  The cornerstone of this process is that the value begin with `static::`.
+
+        "date": {
+            "type": "string",
+            "default": "static::defaultDate()",
+            "pattern": "static::REGEX_DATEISO8601"
+        },
+        
 ## Accessing Data
 
 1. Get the complete dataset as an array (sorted, with defaults, etc): `$array = $data->get()`
@@ -47,7 +69,16 @@
 
 ## Aliases
 
-@todo
+You may have aliases for property keys, which means you can access the same value using any of a number of keys.  To define an alias use colon separation as seen below:
+
+    {
+        ...
+        "properties": {
+            "mi:me:moi": {
+                "default": "myself",
+                "type": "string",
+                "pattern": "/^m.+/"
+            },
 
 ## Custom Validation
 
