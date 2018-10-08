@@ -478,7 +478,9 @@ abstract class Dataset implements DatasetInterface {
    * @codeCoverageIgnore
    */
   protected static function requireKeys() {
-    return (array) static::jsonSchema()->required;
+    $schema = static::jsonSchema();
+
+    return isset($schema->required) ? $schema->required : [];
   }
 
   /**

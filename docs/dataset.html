@@ -27,19 +27,30 @@
 
 <section>
 
+<p>An PHP class to use for data objects, using JSON schema as a validation structure.</p>
+
 <h2>Quick Start</h2>
 
 <ol>
-<li><p>First create a class that extends <code>Dataset</code>. It must implement these protected methods, which define the schema of the dataset.</p>
+<li>Create a class that extends <code>Dataset</code>.</li>
+<li><p>Now define the json schema.  A simple method is to supply a class constant <code>JSON_SCHEMA</code> with the schema value:</p>
 
-<ol>
-<li>acceptKeys</li>
-<li>requireKeys</li>
-<li>describe</li>
-<li>defaults</li>
-<li>types</li>
-<li>match</li>
-</ol></li>
+<pre><code>class SimpleExample extends Dataset {
+
+  const JSON_SCHEMA = '{"type": "object","required":["id"],"id":{"type":"integer"},"version":{"type":"string","default":"1.2.5"}}';
+
+}  
+</code></pre></li>
+<li><p>Most times however, your schema will live in a separate file.  Therefore you will not define the class constant <code>JSON_SCHEMA</code>, rather provide the path to the json schema as the return value of the public static method <code>pathToJsonSchema</code>.  You may follow the convention of appending <code>.schema.json</code> to the classname, if you wish, as shown here:</p>
+
+<pre><code>/**
+ * {@inheritdoc}
+ */
+protected static function pathToJsonSchema() {
+  return __DIR__ . '/DatasetAlpha.schema.json';
+}
+</code></pre></li>
+<li><p>Now create a <a href="https://json-schema.org/latest/json-schema-validation.html#rfc.section.10">json schema file</a> to define your dataset at the path defined above.</p></li>
 <li><p>Then implement an instance in your code like this:</p>
 
 <pre><code>&lt;?php
@@ -47,11 +58,22 @@ $data = ['id' =&gt; 123];
 ...
 try {
     $timer = Timer::dataset($data)-&gt;validate()-&gt;throwFirstProblem();
-  } catch (\Exception $exception) {
+} catch (\Exception $exception) {
     // Do something if validation failed.
 }
 </code></pre></li>
 </ol>
+
+<h3>Using PHP class members in your JSON code with <code>static::</code></h3>
+
+<p>You can provide class methods, constants, etc in your JSON schema files and they will be evaluated at runtime.  For example, here we provide the regex pattern for the <code>date</code> property with a class constant, and the <code>default</code> value with a class method.  The cornerstone of this process is that the value begin with <code>static::</code>.</p>
+
+<pre><code>    "date": {
+        "type": "string",
+        "default": "static::defaultDate()",
+        "pattern": "static::REGEX_DATEISO8601"
+    },
+</code></pre>
 
 <h2>Accessing Data</h2>
 
@@ -85,7 +107,17 @@ try {
 
 <h2>Aliases</h2>
 
-<p>@todo</p>
+<p>You may have aliases for property keys, which means you can access the same value using any of a number of keys.  To define an alias use colon separation as seen below:</p>
+
+<pre><code>{
+    ...
+    "properties": {
+        "mi:me:moi": {
+            "default": "myself",
+            "type": "string",
+            "pattern": "/^m.+/"
+        },
+</code></pre>
 
 <h2>Custom Validation</h2>
 
@@ -181,7 +213,7 @@ class Alpha extends Dataset {
 </div>
   
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Sun, 07 Oct 2018 11:47:14 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Sun, 07 Oct 2018 16:49:47 -0700</p>
   </div>
 </footer>
 

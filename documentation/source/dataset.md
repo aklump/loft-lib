@@ -15,12 +15,12 @@ An PHP class to use for data objects, using JSON schema as a validation structur
   
 1. Most times however, your schema will live in a separate file.  Therefore you will not define the class constant `JSON_SCHEMA`, rather provide the path to the json schema as the return value of the public static method `pathToJsonSchema`.  You may follow the convention of appending `.schema.json` to the classname, if you wish, as shown here:
 
-       /**
-        * {@inheritdoc}
-        */
-       protected static function pathToJsonSchema() {
-         return __DIR__ . '/DatasetAlpha.schema.json';
-       }
+        /**
+         * {@inheritdoc}
+         */
+        protected static function pathToJsonSchema() {
+          return __DIR__ . '/DatasetAlpha.schema.json';
+        }
  
 1. Now create a [json schema file](https://json-schema.org/latest/json-schema-validation.html#rfc.section.10) to define your dataset at the path defined above.   
 3. Then implement an instance in your code like this:
