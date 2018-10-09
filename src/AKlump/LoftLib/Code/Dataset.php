@@ -23,8 +23,8 @@ use AKlump\Data\Data;
  * @code
  *   public function import($dataset) {
  *      parent::import($dataset);
- *      if (is_string($this->dataset['config_id'])) {
- *          $this->dataset['config_id'] = [$this->dataset['config_id']];
+ *      if (is_string($this->dataset['feature'])) {
+ *          $this->dataset['feature'] = [$this->dataset['feature']];
  *      }
  *      return $this;
  *   }
