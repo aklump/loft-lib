@@ -8,6 +8,23 @@ namespace AKlump\LoftLib\Code;
 class Arrays {
 
   /**
+   * Shuffle an array maintaining keys.
+   *
+   * @param array $array
+   *
+   * @return array The new array with shuffled order and preserved keys.
+   */
+  public static function shuffleWithKeys(array $array)
+  {
+    $keys = array_keys($array);
+    shuffle($keys);
+
+    return array_map(function ($key) use ($array) {
+      return $array[$key];
+    }, array_combine($keys, $keys));
+  }
+
+  /**
    * Return a new array with a key renamed, maintain the element value.
    *
    * @param array $array
