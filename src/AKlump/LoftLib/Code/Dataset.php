@@ -727,7 +727,7 @@ abstract class Dataset implements DatasetInterface {
   }
 
   protected function getVisibleContextForErrorHandler() {
-    $context = $this->withContext ? ' in ... ' . json_encode($this->dataset) : '';
+    $context = $this->withContext ? ' in ' . static::class . ' having ' . json_encode($this->dataset) : '';
     $this->withContext = FALSE;
 
     return $context;
