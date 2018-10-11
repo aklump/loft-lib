@@ -120,9 +120,78 @@ abstract class Dataset implements DatasetInterface {
       if (!(static::$json_schemas[$cid] = json_decode($json))) {
         throw new \InvalidArgumentException("Provided schema is invalid JSON.");
       }
+
+      // Now we have to resolve the $refs.
+      static::resolveJsonSchemaRefs(static::$json_schemas[$cid]);
     }
 
     return static::$json_schemas[$cid];
+  }
+
+  /**
+   * Resolve all $ref elements in the schema defintion.
+   *
+   * @param mixed &$schema
+   *   The json schema definition to start, after that recursion may send
+   *   anything.
+   * @param array $context
+   *   Used internally for recursion tracking.
+   *
+   * @return object
+   *   Since $schema is passed by reference, this is used only for recursion.
+   */
+  private static function resolveJsonSchemaRefs(&$schema, array &$context = []) {
+
+    // Setup default(s).
+    $context += ['schema' => $schema];
+    if (is_scalar($schema)) {
+      return $schema;
+    }
+    else {
+      foreach ($schema as $k => $v) {
+        if ($k === '$ref') {
+          return static::getReferencedValue($v, $context['schema']);
+        }
+        elseif (is_array($schema)) {
+          $schema[$k] = static::resolveJsonSchemaRefs($v, $context);
+        }
+        else {
+          $schema->{$k} = static::resolveJsonSchemaRefs($v, $context);
+        }
+      }
+    }
+
+    return $schema;
+  }
+
+  /**
+   * Get the actual value of a single reference.
+   *
+   * @param string $reference
+   *   E.g. #/definitions/name.
+   * @param object $schema
+   *   The full JSON schema object.
+   *
+   * @return mixed
+   *   The actual value.
+   *
+   * @todo Does not yet resolve in other files.
+   */
+  private static function getReferencedValue($reference, object $schema) {
+    list($file, $path) = explode('#/', $reference);
+    if (!empty($file)) {
+      throw new \RuntimeException("\$ref in external files is not yet supported by " . __CLASS__);
+    }
+    $path = explode('/', $path);
+    while (count($path)) {
+      $key = array_shift($path);
+      if (!property_exists($schema, $key)) {
+        throw new \RuntimeException("Cannot resolve $reference.");
+      }
+      $schema = $schema->{$key};
+    }
+
+    return $schema;
   }
 
   public static function create(array $dataset = []) {
