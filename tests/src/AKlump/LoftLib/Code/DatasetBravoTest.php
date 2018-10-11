@@ -8,7 +8,7 @@ class DatasetBravoTest extends DatasetTestBase {
 
   /**
    * @expectedException Exception
-   * @expectedExceptionMessage "foo" is not an accepted key in ... {"foo":"bar"}
+   * @expectedExceptionMessage "foo" is not an accepted key in
    */
   public function testInvalidSchemaKeyDoesntThrowOnGet() {
     DatasetBravo::dataset(['foo' => 'bar'])
@@ -66,7 +66,7 @@ class DatasetBravoTest extends DatasetTestBase {
     ]);
     $problems = $obj->withContext()->getProblems();
     $problem = $problems['integer'][0];
-    $this->assertStringStartsWith('Missing required field: integer in ... {"double":9.4', $problem);
+    $this->assertStringStartsWith('Missing required field: integer in', $problem);
 
     // Do it again and see that context is not there.
     $problems = $obj->getProblems();

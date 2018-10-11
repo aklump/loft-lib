@@ -63,9 +63,7 @@ You can provide class methods, constants, etc in your JSON schema files and they
 
 ## Setting Data
 
-* You cannot set data directly.
-* You must do an new import, following a get.
-
+* You can alter a single key using `::mutate`.
 
 ## Aliases
 
