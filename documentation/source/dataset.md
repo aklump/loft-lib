@@ -23,6 +23,7 @@ An PHP class to use for data objects, using JSON schema as a validation structur
         }
  
 1. Now create a [json schema file](https://json-schema.org/latest/json-schema-validation.html#rfc.section.10) to define your dataset at the path defined above.   
+    1. Be aware that when you use the `pattern` keyword to define a regex expression that you do NOT include the delimiters like you do in PHP's `preg_match`.  This is corrent JSON: `"pattern": "\\?[^#]+"`, notice there are no delimiters.
 3. Then implement an instance in your code like this:
     
         <?php

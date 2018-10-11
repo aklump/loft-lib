@@ -144,7 +144,7 @@ abstract class Dataset implements DatasetInterface {
 
     // Setup default(s).
     $context += ['schema' => $schema];
-    if (is_scalar($schema)) {
+    if (is_scalar($schema) || is_null($schema)) {
       return $schema;
     }
     else {
@@ -580,7 +580,7 @@ abstract class Dataset implements DatasetInterface {
     foreach (static::jsonSchema()->properties as $name => $item) {
       if (isset($item->pattern)) {
         static::removeAliasKeysFromPropertyKeyDefinition($name);
-        $match[$name] = static::runtimeEval($item->pattern);
+        $match[$name] = '/' . static::runtimeEval($item->pattern) . '/';
       }
     }
 
