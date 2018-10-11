@@ -169,7 +169,7 @@ abstract class Dataset implements DatasetInterface {
    *
    * @param string $reference
    *   E.g. #/definitions/name.
-   * @param object $schema
+   * @param \stdClass $schema
    *   The full JSON schema object.
    *
    * @return mixed
@@ -177,7 +177,7 @@ abstract class Dataset implements DatasetInterface {
    *
    * @todo Does not yet resolve in other files.
    */
-  private static function getReferencedValue($reference, object $schema) {
+  private static function getReferencedValue($reference, \stdClass $schema) {
     list($file, $path) = explode('#/', $reference);
     if (!empty($file)) {
       throw new \RuntimeException("\$ref in external files is not yet supported by " . __CLASS__);
