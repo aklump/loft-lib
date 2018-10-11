@@ -174,13 +174,15 @@ abstract class Dataset implements DatasetInterface {
    *
    * @return mixed
    *   The actual value.
-   *
-   * @todo Does not yet resolve in other files.
    */
   private static function getReferencedValue($reference, \stdClass $schema) {
     list($file, $path) = explode('#/', $reference);
     if (!empty($file)) {
-      throw new \RuntimeException("\$ref in external files is not yet supported by " . __CLASS__);
+      $file = realpath(dirname(static::pathToJsonSchema()) . "/$file");
+      if (!file_exists($file)) {
+        throw new \RuntimeException("External referenced file: $file does not exist.");
+      }
+      $schema = json_decode(file_get_contents($file));
     }
     $path = explode('/', $path);
     while (count($path)) {
@@ -194,6 +196,15 @@ abstract class Dataset implements DatasetInterface {
     return $schema;
   }
 
+  /**
+   * Create a new instance from an array.
+   *
+   * @param array $dataset
+   *   Optional. The started dataset array.
+   *
+   * @return \AKlump\LoftLib\Code\DatasetInterface
+   *   A new instance with $dataset.
+   */
   public static function create(array $dataset = []) {
     $class = get_called_class();
 
@@ -204,11 +215,13 @@ abstract class Dataset implements DatasetInterface {
    * Alias of ::create.
    *
    * @param array $dataset
+   *   Optional. The started dataset array.
    *
-   * @return mixed
+   * @return \AKlump\LoftLib\Code\DatasetInterface
+   *   A new instance with $dataset.
    */
   public static function dataset(array $dataset = array()) {
-    return self::create($dataset);
+    return static::create($dataset);
   }
 
   public static function example($version = 1) {
@@ -257,7 +270,7 @@ abstract class Dataset implements DatasetInterface {
     array_walk($schema, function ($s) {
       $id = $s['id'];
 
-      // Required
+      // Required.
       if ($s['required'] && !array_intersect($s['aliases'], array_keys($this->dataset))) {
         $this->problems[$id][] = "Missing required field: $id";
       }
@@ -265,12 +278,12 @@ abstract class Dataset implements DatasetInterface {
       if (isset($this->dataset[$id])) {
         $subject = $this->dataset[$id];
 
-        // Check regex mask
+        // Check regex mask.
         if (!empty($s['mask']) && (!preg_match($s['mask'], $subject, $matches) || $matches[0] != $subject)) {
           $this->problems[$id][] = "Supplied value for \"$id\" of \"$subject\" does not match the regex format: " . $s['mask'];
         }
 
-        // Check variable type
+        // Check variable type.
         $type = gettype($subject);
         if (!in_array($type, $s['types'])) {
           $this->problems[$id][] = "Supplied value for \"$id\" of \"$subject\" ($type) is not one of type: " . implode(' or ', $s['types']);
@@ -647,10 +660,11 @@ abstract class Dataset implements DatasetInterface {
   protected static function types() {
     return array_map(function ($item) {
       if (!isset($item->type)) {
-        return 'string';
+        $type = 'string';
       }
-
-      $type = is_array($item->type) ? implode('|', $item->type) : $item->type;
+      else {
+        $type = is_array($item->type) ? implode('|', $item->type) : $item->type;
+      }
 
       return $type;
     }, (array) static::jsonSchema()->properties);
