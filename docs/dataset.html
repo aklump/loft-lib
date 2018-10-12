@@ -50,7 +50,11 @@ protected static function pathToJsonSchema() {
   return __DIR__ . '/DatasetAlpha.schema.json';
 }
 </code></pre></li>
-<li><p>Now create a <a href="https://json-schema.org/latest/json-schema-validation.html#rfc.section.10">json schema file</a> to define your dataset at the path defined above.</p></li>
+<li><p>Now create a <a href="https://json-schema.org/latest/json-schema-validation.html#rfc.section.10">json schema file</a> to define your dataset at the path defined above.</p>
+
+<ol>
+<li>Be aware that when you use the <code>pattern</code> keyword to define a regex expression that you do NOT include the delimiters like you do in PHP's <code>preg_match</code>.  This is corrent JSON: <code>"pattern": "\\?[^#]+"</code>, notice there are no delimiters.</li>
+</ol></li>
 <li><p>Then implement an instance in your code like this:</p>
 
 <pre><code>&lt;?php
@@ -212,7 +216,7 @@ class Alpha extends Dataset {
 </div>
   
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Thu, 11 Oct 2018 11:58:05 -0700</p>
+    <p class="legaleeze center">Version: 1.0 &bull; Last Updated: Thu, 11 Oct 2018 21:19:57 -0700</p>
   </div>
 </footer>
 
