@@ -503,7 +503,7 @@ class FilePath implements PersistentInterface {
    */
   public function copyFrom($source) {
     if (is_string($source)) {
-      $source = new FilePath($source, NULL, ['install' => FALSE]);
+      $source = new FilePath($source, ['install' => FALSE]);
     }
 
     $basename = $this->getType() === self::TYPE_FILE ? $this->getBasename() : $source->getBasename();
@@ -547,7 +547,7 @@ class FilePath implements PersistentInterface {
    */
   public function moveFrom($source) {
     if (is_string($source)) {
-      $source = new FilePath($source, NULL, ['install' => FALSE]);
+      $source = new FilePath($source, ['install' => FALSE]);
     }
 
     return $this->to($source->getBasename())
