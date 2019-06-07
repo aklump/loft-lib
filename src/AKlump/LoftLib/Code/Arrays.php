@@ -190,9 +190,10 @@ class Arrays {
 
       return $position;
     }
+    $position = count($array);
     $array[] = $insert;
 
-    return count($insert) - 1;
+    return $position;
   }
 
   /**
@@ -231,7 +232,6 @@ class Arrays {
     $b = array_slice($array, $offset + 1);
     $array = array_merge($a, $insert, $b);
   }
-
 
   /**
    * Compares they keys of $a against $b and returns the values in $a that
