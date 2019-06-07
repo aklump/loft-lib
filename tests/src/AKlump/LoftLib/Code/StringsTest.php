@@ -2,10 +2,12 @@
 
 namespace AKlump\LoftLib\Code;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Test coverate for Strings class.
  */
-class StringsTest extends \PHPUnit_Framework_TestCase {
+class StringsTest extends TestCase {
 
   /**
    * Provides data for testGetFirstNameVariantes.

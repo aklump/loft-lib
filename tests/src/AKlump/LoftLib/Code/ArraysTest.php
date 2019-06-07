@@ -2,10 +2,12 @@
 
 namespace AKlump\LoftLib\Code;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Test the class Arrays.
  */
-class ArraysTest extends \PHPUnit_Framework_TestCase {
+class ArraysTest extends TestCase {
 
   /**
    * @expectedException InvalidArgumentException
