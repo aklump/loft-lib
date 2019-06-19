@@ -365,4 +365,29 @@ class Arrays {
     return $a;
   }
 
+  /**
+   * Implode an array with an optional final glue that is different.[
+   *
+   * This method facilitates English style lists where you have something like
+   * "do, re and mi".
+   *
+   * @param string $glue
+   *   The glue between $pieces.
+   * @param string $final_glue
+   *   The glue for attaching the last element, e.g. ' and ', ' or '.
+   * @param array $pieces
+   *   An indexed array of "words".
+   *
+   * @return string
+   */
+  public static function listImplode($glue, $final_glue, array $pieces) {
+    if ($final_glue && count($pieces) > 1) {
+      $last = array_pop($pieces);
+
+      return implode($glue, $pieces) . $final_glue . $last;
+    }
+
+    return implode($glue, $pieces);
+  }
+
 }
