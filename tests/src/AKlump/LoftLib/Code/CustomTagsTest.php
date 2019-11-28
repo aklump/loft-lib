@@ -4,16 +4,16 @@ namespace AKlump\LoftLib\Code;
 
 use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
-class ReactStyleMarkupTest extends PhpUnitTestCase {
+class CustomTagsTest extends PhpUnitTestCase {
 
   public function testReplaceTagsWorksWhenComponentIsObjectAndCanBeCastToString() {
-    $this->assertSame('Here is a nice juicy pie to eat.', ReactStyleMarkup::replaceTags('Here is <Apple/> to eat.', [
+    $this->assertSame('Here is a nice juicy pie to eat.', CustomTags::replaceTags('Here is <Apple/> to eat.', [
       'Apple' => new CastableString(),
     ]));
   }
 
   public function testGetElementsOnEmptyStringReturnsEmptyArray() {
-    $this->assertSame([], ReactStyleMarkup::getElements(''));
+    $this->assertSame([], CustomTags::getElements(''));
   }
 
   public function testGetElementsWorksWithoutAttributes() {
@@ -26,7 +26,7 @@ class ReactStyleMarkupTest extends PhpUnitTestCase {
     ];
     $subject = '<p><Heading>Project Summary</Heading></p>';
 
-    $this->assertSame($control, ReactStyleMarkup::getElements($subject));
+    $this->assertSame($control, CustomTags::getElements($subject));
   }
 
   public function testGetElementsWorksAsExpected() {
@@ -50,7 +50,7 @@ class ReactStyleMarkupTest extends PhpUnitTestCase {
     ];
     $subject = 'Fusce vel sapien quis orci feugiat accumsan vel sit amet massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc varius turpis vel placerat eleifend. Vivamus tempus enim quam, sit amet porta libero efficitur ac. Maecenas ultricies, felis id vulputate consectetur, <Anchor layout="right" color="red"/>ligula ligula tempor augue, et feugiat sapien ante sit amet dui. Morbi ullamcorper justo nec purus cursus ullamcorper. Sed semper dictum tellus, vel varius metus pellentesque eu. Ut interdum tristique finibus. In pharetra nibh a malesuada dignissim. Etiam a interdum orci. Maecenas ultricies porttitor <Person type="leader" age="44">Aaron</Person>neque. Quisque sit amet tincidunt nulla, ut aliquam mauris. Pellentesque ut efficitur eros. Aenean vestibulum aliquet odio, quis pellentesque mauris congue id. Aenean vitae turpis id sapien sollicitudin blandit.';
 
-    $this->assertSame($control, ReactStyleMarkup::getElements($subject));
+    $this->assertSame($control, CustomTags::getElements($subject));
   }
 
   /**
@@ -104,14 +104,14 @@ We are collecting student photographs to be considered for publication on our we
    * @dataProvider dataForTestReplaceTagsWorksProvider
    */
   public function testReplaceTagsWorks($subject, $control, $map) {
-    $this->assertSame($control, ReactStyleMarkup::replaceTags(
+    $this->assertSame($control, CustomTags::replaceTags(
       $subject,
       $map
     ));
   }
 
   public function testReplaceTagsWorksWithNonSelfClosingElement() {
-    $this->assertSame('<h2>Lorem</h2>', ReactStyleMarkup::replaceTags(
+    $this->assertSame('<h2>Lorem</h2>', CustomTags::replaceTags(
       '<Header>Lorem</Header>',
       [
         'Header' => function ($children) {
@@ -125,7 +125,7 @@ We are collecting student photographs to be considered for publication on our we
    * @expectedException InvalidArgumentException
    */
   public function testReplaceTagsThrowsWhenComponentIsNotUpperCamel() {
-    ReactStyleMarkup::replaceTags('Here is <apple/> to eat.', [
+    CustomTags::replaceTags('Here is <apple/> to eat.', [
       'apple' => (object) ['#markup' => 'food'],
     ]);
   }
@@ -134,7 +134,7 @@ We are collecting student photographs to be considered for publication on our we
    * @expectedException InvalidArgumentException
    */
   public function testReplaceTagsThrowsWhenComponentIsObjectAndCannotBeCastToString() {
-    ReactStyleMarkup::replaceTags('Here is <Apple/> to eat.', [
+    CustomTags::replaceTags('Here is <Apple/> to eat.', [
       'Apple' => (object) ['#markup' => 'food'],
     ]);
   }
@@ -143,13 +143,13 @@ We are collecting student photographs to be considered for publication on our we
    * @expectedException InvalidArgumentException
    */
   public function testReplaceTagsThrowsWhenComponentIsArray() {
-    ReactStyleMarkup::replaceTags('Here is <Apple/> to eat.', [
+    CustomTags::replaceTags('Here is <Apple/> to eat.', [
       'Apple' => ['#markup' => 'food'],
     ]);
   }
 
   public function testReplaceTagsWithComponentNotAppearingInStringWorks() {
-    $this->assertSame('This is totally left field.', ReactStyleMarkup::replaceTags(
+    $this->assertSame('This is totally left field.', CustomTags::replaceTags(
       'This is totally left field.',
       [
         'Apple' => 'an apple',
@@ -158,7 +158,7 @@ We are collecting student photographs to be considered for publication on our we
   }
 
   public function testReplaceTagsWithComponentStringWorks() {
-    $this->assertSame('Here is an apple to eat.', ReactStyleMarkup::replaceTags(
+    $this->assertSame('Here is an apple to eat.', CustomTags::replaceTags(
       'Here is <Apple/> to eat.',
       [
         'Apple' => 'an apple',
@@ -167,7 +167,7 @@ We are collecting student photographs to be considered for publication on our we
   }
 
   public function testReplaceTagsSelfClosingNoAttributesWorks() {
-    $this->assertSame('Here is dinner to eat.', ReactStyleMarkup::replaceTags(
+    $this->assertSame('Here is dinner to eat.', CustomTags::replaceTags(
       'Here is <Food/> to eat.',
       [
         'Food' => function () {
@@ -177,7 +177,7 @@ We are collecting student photographs to be considered for publication on our we
   }
 
   public function testReplaceTagsSelfClosingWithAttributesWorks() {
-    $this->assertSame('Here is an apple to eat.', ReactStyleMarkup::replaceTags(
+    $this->assertSame('Here is an apple to eat.', CustomTags::replaceTags(
       'Here is <Food name="an apple" /> to eat.',
       [
         'Food' => function ($inner, $attributes) {

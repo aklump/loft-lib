@@ -2,7 +2,7 @@
 
 namespace AKlump\LoftLib\Code;
 
-final class ReactStyleMarkup {
+final class CustomTags {
 
   /**
    * Replace React-style element names with rendered array values.
@@ -34,7 +34,7 @@ final class ReactStyleMarkup {
    *   },
    * ];
    *
-   * $html = ReactStyleMarkup::replaceTags($base, $element_value_map);
+   * $html = CustomTags::replaceTags($base, $element_value_map);
    * @endcode
    *
    * @return string
