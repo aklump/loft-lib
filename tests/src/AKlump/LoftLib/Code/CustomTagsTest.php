@@ -181,7 +181,7 @@ We are collecting student photographs to be considered for publication on our we
       'Here is <Food name="an apple" /> to eat.',
       [
         'Food' => function ($inner, $attributes) {
-          return $attributes->name;
+          return $attributes['name'];
         },
       ]));
   }

@@ -91,36 +91,51 @@ final class CustomTags {
       $self_closing = !empty($match[5]);
       if ($self_closing) {
         $name = $match[6];
-        $attributes = !empty($match[7]) ? $match[7] : [];
+        $attributes = !empty($match[7]) ? $match[7] : '';
         $inner_html = '';
       }
       else {
         $name = $match[2];
-        $attributes = !empty($match[3]) ? $match[3] : [];
+        $attributes = !empty($match[3]) ? $match[3] : '';
         $inner_html = !empty($match[4]) ? $match[4] : '';
-      }
-      if ($attributes) {
-        $xml = simplexml_load_string('<div ' . $attributes . '/>');
-        if ($xml === FALSE) {
-          throw new \RuntimeException("Malformed attributes: $attributes");
-        }
-        $attributes = current((array) $xml->attributes());
-        $attributes = array_map(function ($value) {
-          if (is_numeric($value)) {
-            $value *= 1;
-          }
-
-          return $value;
-        }, $attributes);
       }
       $elements[] = [
         'name' => $name,
         'inner_html' => strval($inner_html),
-        'attributes' => $attributes,
+        'attributes' => self::parseAttributesString($attributes),
       ];
     }
 
     return $elements;
+  }
+
+  /**
+   * Convert a string of attributes to an array.
+   *
+   * @param $string
+   *   The attribute string, e.g., 'foo="bar" bar-baz="alpha"'.
+   *
+   * @return array
+   *   The parsed key/value array.
+   */
+  private static function parseAttributesString($string) {
+    $attributes = [];
+    if (trim($string)) {
+      $xml = simplexml_load_string('<div ' . $string . '/>');
+      if ($xml === FALSE) {
+        throw new \RuntimeException("Malformed attributes: \"$string\"");
+      }
+      $attributes = current((array) $xml->attributes());
+      $attributes = array_map(function ($value) {
+        if (is_numeric($value)) {
+          $value *= 1;
+        }
+
+        return $value;
+      }, $attributes);
+    }
+
+    return $attributes;
   }
 
   /**
@@ -144,9 +159,7 @@ final class CustomTags {
     }
     $value = $element_value_map[$element_name];
     if (is_callable($value)) {
-      preg_match_all('/(\w+)=["\'](.+?)["\']/', $attribute_string, $args, PREG_PATTERN_ORDER);
-      $args = (object) array_combine($args[1], $args[2]);
-      $value = $value($inner_html, $args);
+      $value = $value($inner_html, self::parseAttributesString($attribute_string));
     }
 
     if (is_object($value) && method_exists($value, '__toString')) {

@@ -29,6 +29,20 @@ class ShortCodesTest extends PhpUnitTestCase {
   public function dataForTestWordPressExamplesPassProvider() {
     $tests = array();
     $tests[] = array(
+      '[pull_quote margin_top="7"]',
+      'pull_quote',
+      ['margin_top' => 7],
+      '',
+      'foo',
+    );
+    $tests[] = array(
+      '[pull_quote margin-top="7"]',
+      'pull_quote',
+      ['margin-top' => 7],
+      '',
+      'foo',
+    );
+    $tests[] = array(
       '[caption]Caption: [myshortcode][/caption]',
       'caption',
       [],
@@ -83,7 +97,11 @@ class ShortCodesTest extends PhpUnitTestCase {
     $this->assertSame($inner, $elements['inner_html']);
     $this->assertSame($attributes, $elements['attributes']);
     $this->assertSame($inflated, ShortCodes::inflate($shortcode, [
-      $name => $inflated,
+      $name => function ($passed_inner, $passed_attributes) use ($inflated, $attributes) {
+        $this->assertSame($attributes, (array) $passed_attributes);
+
+        return $inflated;
+      },
     ]));
   }
 
@@ -260,10 +278,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ac blandit ris
 
   public function testReplaceTagsSelfClosingWithAttributesWorks() {
     $this->assertSame('Here is an apple to eat.', ShortCodes::inflate(
-      'Here is [food name="an apple" /] to eat.',
+      'Here is [food name="an apple" ] to eat.',
       [
         'food' => function ($inner, $attributes) {
-          return $attributes->name;
+          return $attributes['name'];
         },
       ]));
   }
