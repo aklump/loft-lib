@@ -2,7 +2,20 @@
 
 namespace AKlump\LoftLib\Code;
 
-final class CustomTags {
+/**
+ * This is a class to emulate the WordPress Shortcodes API.
+ *
+ * Shortcode names should be all lowercase and use all letters, but numbers
+ * and underscores should work fine too. Be wary of using hyphens (dashes),
+ * you'll be better off not using them.
+ *
+ * Don't use camelCase or UPPER-CASE for your $atts attribute names
+ *
+ * @link https://codex.wordpress.org/Shortcode_API
+ * @link https://codex.wordpress.org/Shortcode_API#Handling_Attributes
+ * @link https://codex.wordpress.org/Shortcode_API#Enclosing_vs_self-closing_shortcodes
+ */
+final class ShortCodes {
 
   /**
    * Replace React-style element names with rendered array values.
@@ -34,7 +47,7 @@ final class CustomTags {
    *   },
    * ];
    *
-   * $html = CustomTags::replaceTags($base, $element_value_map);
+   * $html = ShortCodes::inflate($base, $element_value_map);
    * @endcode
    *
    * @return string
@@ -43,25 +56,25 @@ final class CustomTags {
    * @link https://github.com/airbnb/javascript/tree/master/react#naming
    * @link https://reactjs.org/docs/dom-elements.html
    */
-  public static function replaceTags($base, array $element_value_map) {
+  public static function inflate($base, array $element_value_map) {
     // These must be sorted longest first or replacement is messed up.
     uksort($element_value_map, function ($a, $b) {
       return strlen($b) - strlen($a);
     });
     $element_names = array_keys($element_value_map);
     array_walk($element_names, function ($element_name) {
-      if (!preg_match('/^[A-Z]/', $element_name)) {
-        throw new \InvalidArgumentException('The element "' . $element_name . '" must be UpperCamelCase.');
+      if (!preg_match('/^[a-z0-9_]/', $element_name)) {
+        throw new \InvalidArgumentException('The element "' . $element_name . '" must be lowercase and only contain: letters, numbers and underscore.');
       }
     });
     $names_regex = array_map('preg_quote', $element_names);
     foreach ($names_regex as $name_regex) {
-      $standard = '/<\s*(' . $name_regex . ')\s*([^>]*)\s*>(.*?)<\/(' . $name_regex . ')>/';
-      $base = preg_replace_callback($standard, function ($matches) use ($base, $element_value_map) {
+      $enclosing = '/\[\s*(' . $name_regex . ')\s*([^\]]*)\s*\](.*?)\[\/(' . $name_regex . ')\]/';
+      $base = preg_replace_callback($enclosing, function ($matches) use ($base, $element_value_map) {
         return self::getElementReplacementValue($matches[1], $matches[2], $matches[3], $element_value_map);
       }, (string) $base);
 
-      $self_closing = '/<\s*(' . $name_regex . ')\s*(.*?)\s*\/>/';
+      $self_closing = '/\[\s*(' . $name_regex . ')\s*(.*?)\s*\]/';
       $base = preg_replace_callback($self_closing, function ($matches) use ($base, $element_value_map) {
         return self::getElementReplacementValue($matches[1], $matches[2], NULL, $element_value_map);
       }, (string) $base);
@@ -83,41 +96,51 @@ final class CustomTags {
    *   - attributes array An array of key/value attributes if exists.s
    */
   public static function getElements($base) {
-    $self_closing = '<\s*([A-Z][^\s]*)\s*([^>\/]*)\s*\/>';
-    $standard = '<\s*([A-Z][^\s]*)\s*([^>\/]*)\s*>(.*?)<\/\s*[A-Z][^\s]*\s*>';
-    preg_match_all("/($standard)|($self_closing)/", $base, $matches, PREG_SET_ORDER);
-    $elements = [];
-    foreach ($matches as $match) {
-      $self_closing = !empty($match[5]);
-      if ($self_closing) {
-        $name = $match[6];
-        $attributes = !empty($match[7]) ? $match[7] : [];
-        $inner_html = '';
-      }
-      else {
-        $name = $match[2];
-        $attributes = !empty($match[3]) ? $match[3] : [];
-        $inner_html = !empty($match[4]) ? $match[4] : '';
-      }
-      if ($attributes) {
-        $xml = simplexml_load_string('<div ' . $attributes . '/>');
-        if ($xml === FALSE) {
-          throw new \RuntimeException("Malformed attributes: $attributes");
-        }
-        $attributes = current((array) $xml->attributes());
-        $attributes = array_map(function ($value) {
-          if (is_numeric($value)) {
-            $value *= 1;
-          }
+    // Generate a set of paired matchers based on opening tags.
+    $self_closing = '\[\s*([a-z0-9_]*)\s*([^\]\/]*)\s*\]';
+    preg_match_all("/($self_closing)/", $base, $matches, PREG_SET_ORDER);
+    $matchers = array_map(function ($match) {
+      $tag = $match[2];
+      $self_closing = '\[\s*(%s)\s*([^\]\/]*)\s*\]';
+      $enclosing = '\[\s*(%s)\s*([^\]\/]*)\s*\](.*?)\[\/\s*%s+\]';
 
-          return $value;
-        }, $attributes);
+      return sprintf("/($enclosing)|($self_closing)/", $tag, $tag, $tag);
+    }, $matches);
+    $elements = [];
+    while ($regex = array_shift($matchers)) {
+      preg_match_all($regex, $base, $matches, PREG_SET_ORDER);
+      foreach ($matches as $match) {
+        $self_closing = !empty($match[5]);
+        if ($self_closing) {
+          $name = $match[6];
+          $attributes = !empty($match[7]) ? $match[7] : [];
+          $inner_html = '';
+        }
+        else {
+          $name = $match[2];
+          $attributes = !empty($match[3]) ? $match[3] : [];
+          $inner_html = !empty($match[4]) ? $match[4] : '';
+        }
+        if ($attributes) {
+          $xml = simplexml_load_string('<div ' . $attributes . '/>');
+          if ($xml === FALSE) {
+            throw new \RuntimeException("Malformed attributes: $attributes");
+          }
+          $attributes = current((array) $xml->attributes());
+          $attributes = array_map(function ($value) {
+            if (is_numeric($value)) {
+              $value *= 1;
+            }
+
+            return $value;
+          }, $attributes);
+        }
+        $elements[] = [
+          'name' => $name,
+          'inner_html' => strval($inner_html),
+          'attributes' => $attributes,
+        ];
       }
-      $elements[] = [
-        'name' => $name,
-        'inner_html' => strval($inner_html),
-        'attributes' => $attributes,
-      ];
     }
 
     return $elements;
