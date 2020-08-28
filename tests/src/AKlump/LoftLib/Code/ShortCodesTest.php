@@ -169,6 +169,9 @@ class ShortCodesTest extends PhpUnitTestCase {
     $subject = 'Fusce vel sapien quis orci feugiat accumsan vel sit amet massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc varius turpis vel placerat eleifend. Vivamus tempus enim quam, sit amet porta libero efficitur ac. Maecenas ultricies, felis id vulputate consectetur, [anchor layout="right" color="red"]ligula ligula tempor augue, et feugiat sapien ante sit amet dui. Morbi ullamcorper justo nec purus cursus ullamcorper. Sed semper dictum tellus, vel varius metus pellentesque eu. Ut interdum tristique finibus. In pharetra nibh a malesuada dignissim. Etiam a interdum orci. Maecenas ultricies porttitor [person type="leader" age="44"]Aaron[/person]neque. Quisque sit amet tincidunt nulla, ut aliquam mauris. Pellentesque ut efficitur eros. Aenean vestibulum aliquet odio, quis pellentesque mauris congue id. Aenean vitae turpis id sapien sollicitudin blandit.';
 
     $this->assertSame($control, ShortCodes::getElements($subject));
+
+    // Call a second time to ensure the static cache works.
+    $this->assertSame($control, ShortCodes::getElements($subject));
   }
 
   public function testReplaceTagsWorksWhenComponentIsObjectAndCanBeCastToString() {
