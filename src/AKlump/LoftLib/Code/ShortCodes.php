@@ -170,7 +170,7 @@ final class ShortCodes {
    */
   private static function parseAttributesString($string) {
     $attributes = [];
-    if (trim($string)) {
+    if (($string = trim($string, '  '))) {
       $xml = simplexml_load_string('<div ' . $string . '/>');
       if ($xml === FALSE) {
         throw new \RuntimeException("Malformed attributes: \"$string\"");

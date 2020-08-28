@@ -6,6 +6,13 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class ShortCodesTest extends PhpUnitTestCase {
 
+  public function testAttributesCanHandleNBSPCharacter() {
+    $base = 'indigenous[see_footnote id="1"] peoples,';
+    $elements = ShortCodes::getElements($base);
+    $this->assertCount(1, $elements);
+    $this->assertSame('see_footnote', $elements[0]['name']);
+    $this->assertSame(1, $elements[0]['attributes']['id']);
+  }
 
   public function testPrepareCallsInTheOrderOfCallbacksNotPresentation() {
     $prepare_callbacks = [
