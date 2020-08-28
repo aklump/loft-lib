@@ -6,6 +6,18 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class ShortCodesTest extends PhpUnitTestCase {
 
+  public function testAbleToGetSomeElementsIfAnotherFailsAttributeParsing() {
+    $base = 'lorem [foo id="1"]ipsum[/foo] dolar [bar] sit [ãka wakã] amet';
+    $elements = ShortCodes::getElements($base);
+
+    $this->assertCount(2, $elements);
+    $this->assertSame('foo', $elements[0]['name']);
+    $this->assertSame(1, $elements[0]['attributes']['id']);
+
+    $this->assertSame('bar', $elements[1]['name']);
+    $this->assertEmpty($elements[1]['attributes']);
+  }
+
   public function testAttributesCanHandleNBSPCharacter() {
     $base = 'indigenous[see_footnote id="1"] peoples,';
     $elements = ShortCodes::getElements($base);

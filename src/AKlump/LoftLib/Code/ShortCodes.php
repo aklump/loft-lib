@@ -148,11 +148,17 @@ final class ShortCodes {
           $attributes = !empty($match[3]) ? $match[3] : '';
           $inner_html = !empty($match[4]) ? $match[4] : '';
         }
-        $elements[] = [
-          'name' => $name,
-          'inner_html' => strval($inner_html),
-          'attributes' => self::parseAttributesString($attributes),
-        ];
+        try {
+          $attributes = self::parseAttributesString($attributes);
+          $elements[] = [
+            'name' => $name,
+            'inner_html' => strval($inner_html),
+            'attributes' => $attributes,
+          ];
+        }
+        catch (\Exception $exception) {
+          // Purposefully left blank.
+        }
       }
     }
 
@@ -171,7 +177,7 @@ final class ShortCodes {
   private static function parseAttributesString($string) {
     $attributes = [];
     if (($string = trim($string, '  '))) {
-      $xml = simplexml_load_string('<div ' . $string . '/>');
+      $xml = @simplexml_load_string('<div ' . $string . '/>');
       if ($xml === FALSE) {
         throw new \RuntimeException("Malformed attributes: \"$string\"");
       }
