@@ -6,6 +6,29 @@ use AKlump\LoftLib\Testing\PhpUnitTestCase;
 
 class ShortCodesTest extends PhpUnitTestCase {
 
+
+  public function testPrepareCallsInTheOrderOfCallbacksNotPresentation() {
+    $prepare_callbacks = [
+      'bravo' => function ($base) {
+        return $base . '.bravo';
+      },
+      'alpha' => function ($base) {
+        return $base . '.alpha';
+      },
+    ];
+    $this->assertSame('[alpha][bravo].bravo.alpha', ShortCodes::prepare('[alpha][bravo]', $prepare_callbacks));
+  }
+
+  public function testPrepareOnlyCallsWhenShortCodePresent() {
+    $prepare_callbacks = [
+      'caption' => function ($base) {
+        return trim($base);
+      },
+    ];
+    $this->assertSame('', ShortCodes::prepare('', $prepare_callbacks));
+    $this->assertSame('[caption]', ShortCodes::prepare(' [caption] ', $prepare_callbacks));
+  }
+
   /**
    * The WordPress API states "The shortcode parser uses a single pass on the
    * post content. This means that if the $content parameter of a shortcode
