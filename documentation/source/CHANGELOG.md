@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.0.0] - 2023-06-28
+
+### Removed
+
+- The following files are too complicated to use and there are other options out there, so they were removed in 2.0. You will need to rewrite with one of those.
+
+- `\AKlump\LoftLib\Storage\FilePath`
+- `\AKlump\LoftLib\Storage\FilePathCollection`
+- `\AKlump\LoftLib\Storage\PersistentInterface`
+
+### Added
+
+- Support for PHP ^8.0
+
+### Changed
+
+- The return value of `\AKlump\LoftLib\Code\LoftXmlElement::addAttribute` is now `void`, so you can no longer chain this method, if you had done so.  **Search your codebase for chaining and fix!**
+- Minimum PHP increased to ^7.3
+
 ## [1.5.0] - 2021-12-23
 
 ### Added

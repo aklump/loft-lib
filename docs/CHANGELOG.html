@@ -5,6 +5,7 @@
   <title>Changelog</title>
   <link href="search/tipuesearch.css" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
+  <meta name="keywords" content="" />
 </head>
 
 <body class="page--changelog">
@@ -20,16 +21,39 @@
 </div>
   </section>
 
-
-<h1>Changelog</h1>
-
 <section>
+  <h1>Changelog</h1>
+  <!--searchable_content-->
 
 <p>All notable changes to this project will be documented in this file.</p>
 
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 
 <h2>[Unreleased]</h2>
+
+<h2>[2.0.0] - 2023-06-28</h2>
+
+<h3>Removed</h3>
+
+<ul>
+<li><p>The following files are too complicated to use and there are other options out there, so they were removed in 2.0. You will need to rewrite with one of those.</p></li>
+<li><p><code>\AKlump\LoftLib\Storage\FilePath</code></p></li>
+<li><code>\AKlump\LoftLib\Storage\FilePathCollection</code></li>
+<li><code>\AKlump\LoftLib\Storage\PersistentInterface</code></li>
+</ul>
+
+<h3>Added</h3>
+
+<ul>
+<li>Support for PHP ^8.0</li>
+</ul>
+
+<h3>Changed</h3>
+
+<ul>
+<li>The return value of <code>\AKlump\LoftLib\Code\LoftXmlElement::addAttribute</code> is now <code>void</code>, so you can no longer chain this method, if you had done so.  <strong>Search your codebase for chaining and fix!</strong></li>
+<li>Minimum PHP increased to ^7.3</li>
+</ul>
 
 <h2>[1.5.0] - 2021-12-23</h2>
 
@@ -85,6 +109,7 @@
 <ul>
 <li>Updated tests to work with PHPUnit 6.x, 7.x</li>
 </ul>
+<!--end_searchable_content-->
 </section>
 
 <div class="search__results">
@@ -94,7 +119,7 @@
 <footer>
   <div class="pager"><a href="index.html" class="prev index">&laquo;Index</a><a href="index.html" class="index pager__book-title"></a><a href="dataset.html" class="next dataset">Dataset&raquo;</a></div>  
   <div id="footer-legaleeze">
-    <p class="legaleeze center">Version: 1.5.0 &bull; Last Updated: Thu, 23 Dec 2021 20:08:24 -0800</p>
+    <p class="legaleeze center">Version: 1.5.0 &bull; Last Updated: Wed, 28 Jun 2023 14:54:44 -0700</p>
   </div>
 </footer>
 
@@ -110,4 +135,3 @@
 <script src="js/core.js"></script>
 </body>
 </html>
-
