@@ -1,0 +1,6 @@
+chapter_order:
+  - _default
+chapter_info:
+  -
+    id: _default
+    title: Default

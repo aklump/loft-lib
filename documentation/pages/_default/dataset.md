@@ -1,3 +1,8 @@
+<!--
+id: dataset
+tags: _default
+-->
+
 # Dataset
 
 An PHP class to use for data objects, using JSON schema as a validation structure.

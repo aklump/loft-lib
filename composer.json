@@ -9,6 +9,17 @@
       "email": "sourcecode@intheloftstudios.com"
     }
   ],
+  "minimum-stability": "dev",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/Users/aklump/Code/Packages/php/knowledge/app"
+    },
+    {
+      "type": "path",
+      "url": "/Users/aklump/Code/Packages/php/json_schema"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "AKlump\\LoftLib\\": "src\/"
@@ -19,7 +30,6 @@
       "AKlump\\LoftLib\\": "tests_unit\/"
     }
   },
-  "minimum-stability": "stable",
   "require": {
     "php": "^7.3|^8.0",
     "illuminate/support": "^7|^8|^10.14",
@@ -28,6 +38,7 @@
   },
   "version": "1.5.0",
   "require-dev": {
-    "phpunit/phpunit": "^9.5"
+    "phpunit/phpunit": "^9.5",
+    "aklump/knowledge": "@dev"
   }
 }

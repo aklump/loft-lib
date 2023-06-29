@@ -1,3 +1,8 @@
+<!--
+id: changelog
+tags: _default
+-->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -8,9 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [2.0.0] - 2023-06-28
 
-### Removed
+### Deprecated
 
-- The following files are too complicated to use and there are other options out there, so they were removed in 2.0. You will need to rewrite with one of those.
+- The following files are too complicated to use and there are other options out there, so they have been deprecated and will be removed. Replace all implementations immediately.
 
 - `\AKlump\LoftLib\Storage\FilePath`
 - `\AKlump\LoftLib\Storage\FilePathCollection`
