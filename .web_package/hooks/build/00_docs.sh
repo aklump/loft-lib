@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-php ./vendor/aklump/knowledge/bin/book.php bind ./documentation
+php ./documentation/vendor/aklump/knowledge/bin/book.php bind ./documentation/source
