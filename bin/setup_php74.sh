@@ -12,4 +12,4 @@ while [ -h "$source" ]; do # resolve $source until the file is no longer a symli
 done
 root="$( cd -P "$( dirname "$source" )" && pwd )"
 
-source "$root/_setup_php.sh" "$(cd /Applications/MAMP/bin/php/php7.4* && pwd)/bin"
+"$root/_setup_php.sh" "$(cd /Applications/MAMP/bin/php/php7.4* && pwd)/bin"
