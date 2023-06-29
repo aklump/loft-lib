@@ -1,11 +1,11 @@
 <!--
 id: developers
-tags: _default
+tags: usage
 -->
 
 # Developing This Package
 
-1. To develop with different php versions you can use _bin/setup_php*.sh_ files. They relay on MAMP being used but if you study them you could see how to use some other PHP provider.
+1. To develop with different php versions you can use _bin/setup\_php*.sh_ files. They rely on MAMP being used but if you study them you could see how to use some other PHP provider.
 2. To run tests: `./bin/run_unit_tests.sh`.
 3. To get code coverage `./bin/run_unit_tests.sh --coverage-html=reports/coverage`.
 

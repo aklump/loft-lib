@@ -1,6 +1,6 @@
 <!--
 id: changelog
-tags: _default
+tags: usage
 -->
 
 # Changelog

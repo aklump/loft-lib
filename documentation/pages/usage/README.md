@@ -1,8 +1,8 @@
 <!--
 id: readme
-tags: _default
+tags: usage
 -->
 
-# In the Loft Studios Library
+# {{ book.title }}
 
 A collection of open source code provided by [In the Loft Studios, LLC](http://intheloftstudios.com/).
