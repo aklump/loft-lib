@@ -1,8 +1,8 @@
 author: 'Aaron Klump <sourcecode@intheloftstudios.com>'
 create_tags: patch
-develop: main
+develop: master
 do_version_commit: false
-master: main
+master: master
 patch_prefix: .
 patch_step: 1
 preserve_patch_zero: true
@@ -11,4 +11,4 @@ push_master: true
 push_tags: true
 remote: origin
 version_file: .web_package/config.yml
-version: 2.0.2
+version: 2.1.0
