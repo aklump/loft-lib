@@ -31,6 +31,8 @@ use Dflydev\DotAccessData\Data;
  */
 class InfiniteSubset {
 
+  protected static $session = [];
+
   /**
    * @var null|array
    */
@@ -56,10 +58,15 @@ class InfiniteSubset {
       throw new \InvalidArgumentException('Passing $data to __construct is no longer supported');
     }
     if (NULL === $stateArray) {
-      $_SESSION = $_SESSION ?? [];
-      $stateArray =& $_SESSION;
+      if (isset($_SESSION)) {
+        $_SESSION = $_SESSION ?? [];
+        $stateArray =& $_SESSION[__CLASS__];
+      }
+      else {
+        $stateArray = &static::$session;
+      }
     }
-    $this->container =& $stateArray;
+    $this->container = &$stateArray;
     $this->setContainerPath($stateArrayPath);
     if (!$this->containerIsInitialized()) {
       $this->reset($dataset);
@@ -87,7 +94,8 @@ class InfiniteSubset {
     $slice = array();
     if ($this->getDataset()) {
       $stack = $this->getStack();
-      while (is_array($stack) && count($stack) < $count) {
+      $break = microtime(TRUE) + 1000;
+      while (microtime(TRUE) < $break && is_array($stack) && count($stack) < $count) {
         $stack = array_merge($stack, $this->getSortedDataset());
       }
       $slice = array_slice($stack, 0, $count, TRUE);
@@ -162,6 +170,9 @@ class InfiniteSubset {
     ];
     if (!$this->containerPath) {
       return $this->container + $default;
+    }
+    elseif (empty($this->container)) {
+      return $default;
     }
     else {
       $value = (new Data($this->container))->get($this->containerPath, $default);
