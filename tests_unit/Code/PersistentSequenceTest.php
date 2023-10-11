@@ -1,9 +1,10 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
 
-use AKlump\LoftLib\Testing\PhpUnitTestCase;
+use AKlump\LoftLib\Tests\PhpUnitTestCase;
+use AKlump\LoftLib\Code\PersistentSequence;
 
 /**
  * @covers \AKlump\LoftLib\Code\PersistentSequence

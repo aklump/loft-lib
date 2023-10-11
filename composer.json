@@ -16,7 +16,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "AKlump\\LoftLib\\": "tests_unit\/"
+      "AKlump\\LoftLib\\Tests\\": "tests_unit\/"
     }
   },
   "require": {

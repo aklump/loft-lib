@@ -1,8 +1,9 @@
 <?php
 
-namespace AKlump\LoftLib\Bash;
+namespace AKlump\LoftLib\Tests\Bash;
 
 use PHPUnit\Framework\TestCase;
+use AKlump\LoftLib\Bash\Output;
 
 /**
  * @covers \AKlump\LoftLib\Bash\Output

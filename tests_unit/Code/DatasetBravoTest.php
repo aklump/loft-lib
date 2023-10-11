@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Testing\DatasetTestBase;
+use AKlump\LoftLib\Tests\DatasetTestBase;
 
 /**
  * @covers \AKlump\LoftLib\Code\DatasetBravo

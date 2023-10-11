@@ -490,7 +490,7 @@ class FilePath implements PersistentInterface {
    *
    * @param $source
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath
+   * @return \AKlump\LoftLib\Storage\FilePath
    */
   public function copy($source) {
     return $this->_copyOrMove('copy', 'copy', $source);
@@ -499,10 +499,10 @@ class FilePath implements PersistentInterface {
   /**
    * Copy a file in from $source.
    *
-   * @param string|\AKlump\LoftLib\Component\Storage\FilePath $source
+   * @param string|\AKlump\LoftLib\Storage\FilePath $source
    *   The source instance to copy from.
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath
+   * @return \AKlump\LoftLib\Storage\FilePath;
    */
   public function copyFrom($source) {
     if (is_string($source)) {
@@ -520,7 +520,7 @@ class FilePath implements PersistentInterface {
    *
    * @param $source
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath
+   * @return \AKlump\LoftLib\Storage\FilePath
    */
   public function upload($source) {
     return $this->_copyOrMove('move', 'move_uploaded_file', $source);
@@ -531,7 +531,7 @@ class FilePath implements PersistentInterface {
    *
    * @param $source
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath
+   * @return \AKlump\LoftLib\Storage\FilePath
    */
   public function move($source) {
     return $this->_copyOrMove('move', 'rename', $source);
@@ -559,10 +559,10 @@ class FilePath implements PersistentInterface {
    * This differs from move in that you do not call to() before because this is
    * copied with the same filename.
    *
-   * @param string|\AKlump\LoftLib\Component\Storage\FilePath $source
+   * @param string|\AKlump\LoftLib\Storage\FilePath $source
    *   The source instance to copy from.
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath
+   * @return \AKlump\LoftLib\Storage\FilePath
    */
   public function moveFrom($source) {
     if (is_string($source)) {
@@ -641,7 +641,7 @@ class FilePath implements PersistentInterface {
    * @param string $matchRegEx
    * @param string $excludeRegEx
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePath|\AKlump\LoftLib\Component\Storage\FilePathCollection|null
+   * @return \AKlump\LoftLib\Storage\FilePath|\AKlump\LoftLib\Storage\FilePathCollection|null
    */
   public function children($matchRegEx = '', $excludeRegEx = '') {
     return $this->descendents($matchRegEx, $excludeRegEx, 1);
@@ -668,7 +668,7 @@ class FilePath implements PersistentInterface {
    *  descendents(''. '/\.pdf$/);
    * @endcode
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePathCollection|null|static
+   * @return \AKlump\LoftLib\Storage\FilePathCollection|null|static
    */
   public function descendents() {
     $options = [];
@@ -777,7 +777,7 @@ class FilePath implements PersistentInterface {
    * @param null $files
    * @param int $level
    *
-   * @return \AKlump\LoftLib\Component\Storage\FilePathCollection|null
+   * @return \AKlump\LoftLib\Storage\FilePathCollection|null
    * @see FilePath::getFilesRecursively()
    *
    */

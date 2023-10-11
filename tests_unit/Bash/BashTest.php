@@ -4,9 +4,11 @@
  * PHPUnit tests for the Bash class
  */
 
-namespace AKlump\LoftLib\Bash;
+namespace AKlump\LoftLib\Tests\Bash;
 
 use PHPUnit\Framework\TestCase;
+
+use AKlump\LoftLib\Bash\Bash;
 
 /**
  * @covers \AKlump\LoftLib\Bash\Bash

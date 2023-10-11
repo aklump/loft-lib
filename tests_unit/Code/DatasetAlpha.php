@@ -1,6 +1,9 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
+
+use AKlump\LoftLib\Code\Dataset;
+use AKlump\LoftLib\Code\Dates;
 
 /**
  * A class to use for unit testing.

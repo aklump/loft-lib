@@ -1,8 +1,9 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
 use PHPUnit\Framework\TestCase;
+use AKlump\LoftLib\Code\Arrays;
 
 /**
  * Test the class Arrays.

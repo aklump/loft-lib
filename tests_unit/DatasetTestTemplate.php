@@ -1,8 +1,6 @@
 <?php
 
-namespace __NAmespace;
-
-use AKlump\LoftLib\Testing\DatasetTestBase;
+namespace AKlump\LoftLib\Tests;
 
 class __CLassNameTest extends DatasetTestBase {
 
@@ -48,13 +46,13 @@ class __CLassNameTest extends DatasetTestBase {
 
   public function setUp(): void {
     $this->objArgs = [
-      __CLassName::example()->get(),
+      \__NAmespace\__CLassName::example()->get(),
     ];
     $this->createObj();
   }
 
   protected function createObj() {
     list ($def) = $this->objArgs;
-    $this->obj = new __CLassName($def);
+    $this->obj = new \__NAmespace\__CLassName($def);
   }
 }

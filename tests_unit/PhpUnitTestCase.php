@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\LoftLib\Testing;
+namespace AKlump\LoftLib\Tests;
 
 use PHPUnit\Framework\TestCase;
 

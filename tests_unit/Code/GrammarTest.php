@@ -4,8 +4,9 @@
  * PHPUnit tests for the Grammar class
  */
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
+use AKlump\LoftLib\Code\Grammar;
 use PHPUnit\Framework\TestCase;
 
 /**

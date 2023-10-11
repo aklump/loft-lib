@@ -1,6 +1,8 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
+
+use AKlump\LoftLib\Code\Dataset;
 
 class DatasetBravo extends Dataset {
 
@@ -18,4 +20,5 @@ class DatasetBravo extends Dataset {
 
 class SomeCustomClass {
 
+  // @see DatasetBravo.schema.json
 }

@@ -1,8 +1,9 @@
 <?php
 
-namespace AKlump\LoftLib\Bash;
+namespace AKlump\LoftLib\Tests\Bash;
 
 use PHPUnit\Framework\TestCase;
+use AKlump\LoftLib\Bash\Color;
 
 /**
  * @covers \AKlump\LoftLib\Bash\Color

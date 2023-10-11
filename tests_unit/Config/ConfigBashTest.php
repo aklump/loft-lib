@@ -4,10 +4,11 @@
  * PHPUnit tests for the ConfigBash class
  */
 
-namespace AKlump\LoftLib\Config;
+namespace AKlump\LoftLib\Tests\Config;
 
-use AKlump\LoftLib\Testing\PhpUnitTestCase;
-use PHPUnit\Framework\TestCase;
+
+use AKlump\LoftLib\Tests\PhpUnitTestCase;
+use AKlump\LoftLib\Config\ConfigBash;
 
 /**
  * @covers \AKlump\LoftLib\Config\ConfigBash
@@ -66,12 +67,10 @@ class ConfigBashTest extends PhpUnitTestCase {
   public function setUp(): void {
     $this->createSandbox();
     $this->dir = $this->sb;
-
-    $this->classname = preg_replace('/Test$/', '', get_class($this));
   }
 
   public function tearDown(): void {
-    $obj = new $this->classname($this->dir);
+    $obj = new ConfigBash($this->dir);
     $obj->destroy();
     $this->destroySandbox();
   }

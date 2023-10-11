@@ -1,9 +1,8 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Testing\DatasetTestBase;
-use AKlump\LoftLib\Code\Dataset;
+use AKlump\LoftLib\Tests\DatasetTestBase;
 
 /**
  * @covers \AKlump\LoftLib\Code\DatasetAlpha
@@ -29,7 +28,7 @@ class DatasetAlphaTest extends DatasetTestBase {
 
   public function testCreateMethodInstantiates() {
     $obj = DatasetAlpha::create(['do' => 're']);
-    $this->assertInstanceOf('AKlump\LoftLib\Code\DatasetAlpha', $obj);
+    $this->assertInstanceOf(DatasetAlpha::class, $obj);
   }
 
   public function testMutateReturnsNewObjectWithNewValueWhenValueIsNew() {
