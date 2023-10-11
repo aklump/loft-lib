@@ -14,6 +14,14 @@ class InfiniteSubsetTest extends TestCase {
 
   use TestingProtectedTrait;
 
+  public function testSessionIsInitializedOkay() {
+    global $_SESSION;
+    $_SESSION = [];
+    $dataset = [1, 2];
+    $obj = new InfiniteSubset('', $dataset);
+    $this->assertSame($obj, $obj->reset($dataset));
+  }
+
   public function testPassingFourthArgumentThrows() {
     $this->expectException(\InvalidArgumentException::class);
     $state = [];

@@ -46,20 +46,20 @@ class InfiniteSubset {
   /**
    * InfiniteSubset constructor.
    *
-   * @param string $stateArrayPath The dot separated path in $stateArray.
-   * @param array $dataset The original array to step through.  Keys must not
-   *                                          be important as only the values
-   *   will be used. Elements should be single values (strings, int, etc) not
-   *   arrays nor objects.
+   * @param string|array $stateArrayPath The dot separated path in $stateArray.
+   * @param array $dataset The original array to step through.  Keys must not be
+   * important as only the values will be used. Elements should be single values
+   * (strings, int, etc) not arrays nor objects.
    * @param array $stateArray Defaults to $_SESSION.  An array to hold state.
    */
-  public function __construct($stateArrayPath = '', $dataset = array(), array &$stateArray = NULL) {
+  public function __construct($stateArrayPath, array $dataset, array &$stateArray = NULL) {
     if (func_num_args() > 3) {
       throw new \InvalidArgumentException('Passing $data to __construct is no longer supported');
     }
     if (NULL === $stateArray) {
+      global $_SESSION;
       if (isset($_SESSION)) {
-        $_SESSION = $_SESSION ?? [];
+        $_SESSION[__CLASS__] = $_SESSION[__CLASS__] ?? [];
         $stateArray =& $_SESSION[__CLASS__];
       }
       else {
@@ -163,7 +163,7 @@ class InfiniteSubset {
    *
    * @return mixed
    */
-  private function getContainerData() {
+  private function getContainerData(): array {
     $default = [
       'stack' => [],
       'dataset' => [],
