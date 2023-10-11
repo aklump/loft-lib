@@ -7,13 +7,16 @@
 namespace AKlump\LoftLib\Tests\Config;
 
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Config\ConfigBash;
+use AKlump\LoftLib\Tests\TestingFilesTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\LoftLib\Config\ConfigBash
  */
-class ConfigBashTest extends PhpUnitTestCase {
+class ConfigBashTest extends TestCase {
+
+  use TestingFilesTrait;
 
   public function testSetNumericArrayPlusFormat() {
     $obj = new ConfigBash($this->dir, NULL, array('install' => TRUE));
@@ -65,14 +68,15 @@ class ConfigBashTest extends PhpUnitTestCase {
   }
 
   public function setUp(): void {
-    $this->createSandbox();
+    $this->sb = rtrim($this->getTestFilesDirectory(), '/');
+    $this->deleteAllTestFiles();
     $this->dir = $this->sb;
   }
 
   public function tearDown(): void {
     $obj = new ConfigBash($this->dir);
     $obj->destroy();
-    $this->destroySandbox();
+    $this->deleteAllTestFiles();
   }
 
 }

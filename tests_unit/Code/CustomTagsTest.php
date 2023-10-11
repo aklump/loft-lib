@@ -2,13 +2,12 @@
 
 namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\CustomTags;
 
 /**
  * @covers \AKlump\LoftLib\Code\CustomTags
  */
-class CustomTagsTest extends PhpUnitTestCase {
+class CustomTagsTest extends \PHPUnit\Framework\TestCase {
 
   public function testReplaceTagsWorksWhenComponentIsObjectAndCanBeCastToString() {
     $this->assertSame('Here is a nice juicy pie to eat.', CustomTags::replaceTags('Here is <Apple/> to eat.', [

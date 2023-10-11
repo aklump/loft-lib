@@ -1,14 +1,18 @@
 <?php
 
-namespace AKlump\LoftLib\Code;
+namespace AKlump\LoftLib\Tests\Code;
 
 
-use AKlump\LoftLib\Testing\PhpUnitTestCase;
+use AKlump\LoftLib\Code\InfiniteSubset;
+use AKlump\LoftLib\Tests\TestingProtectedTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\LoftLib\Code\InfiniteSubset
  */
-class InfiniteSubsetTest extends PhpUnitTestCase {
+class InfiniteSubsetTest extends TestCase {
+
+  use TestingProtectedTrait;
 
   public function testPassingFourthArgumentThrows() {
     $this->expectException(\InvalidArgumentException::class);
@@ -84,16 +88,24 @@ class InfiniteSubsetTest extends PhpUnitTestCase {
 
   public function testWorksWhenPathIsArray() {
     $path = ['foo'];
-    $dataset = [1, 2, 3, 4];
+    $dataset = [1, 2];
     $obj = new InfiniteSubset($path, $dataset);
-    $foo = $obj->slice(1);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
-    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+  }
+
+  public function testWorksWhenPathIsInt() {
+    $path = [5];
+    $dataset = [1, 2];
+    $obj = new InfiniteSubset($path, $dataset);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2]);
   }
 
   public function setUp(): void {

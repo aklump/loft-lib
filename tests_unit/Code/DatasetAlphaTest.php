@@ -9,6 +9,8 @@ use AKlump\LoftLib\Tests\DatasetTestBase;
  */
 class DatasetAlphaTest extends DatasetTestBase {
 
+  use \AKlump\LoftLib\Tests\TestingProtectedTrait;
+
   public function testGetDefaultReturnsMasterValueWhenAnyAliasUsed() {
     DatasetAlpha::getDefault('me');
     $this->assertSame('myself', DatasetAlpha::getDefault('me'));

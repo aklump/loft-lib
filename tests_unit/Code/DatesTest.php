@@ -2,13 +2,12 @@
 
 namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\Dates;
 
 /**
  * @covers \AKlump\LoftLib\Code\Dates
  */
-class DatesTest extends PhpUnitTestCase {
+class DatesTest extends \PHPUnit\Framework\TestCase {
 
   public function setUp(): void {
     $this->objArgs = [

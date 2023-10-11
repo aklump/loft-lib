@@ -2,7 +2,7 @@
 
 namespace AKlump\LoftLib\Tests;
 
-class DatasetTestBase extends PhpUnitTestCase {
+class DatasetTestBase extends \PHPUnit\Framework\TestCase {
 
   /**
    * Provides data for testDefaults.

@@ -8,14 +8,17 @@
 namespace AKlump\LoftLib\Tests\Storage;
 
 use AKlump\LoftLib\Code\LoftXmlElement;
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Storage\FilePath;
 use AKlump\LoftLib\Storage\FilePathCollection;
+use AKlump\LoftLib\Tests\TestingFilesTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\LoftLib\Storage\FilePath
  */
-class FilePathTest extends PhpUnitTestCase {
+class FilePathTest extends TestCase {
+
+  use TestingFilesTrait;
 
   public function testCopyFromWithDifferentBasenames() {
     $source = new FilePath($this->sb . '/alpha/index.html');
@@ -837,12 +840,12 @@ class FilePathTest extends PhpUnitTestCase {
   }
 
   public function setUp(): void {
-    $this->createSandbox();
-    $this->assertTrue(is_dir($this->sb));
+    $this->sb = $this->getTestFilesDirectory();
+    $this->deleteAllTestFiles();
   }
 
   public function tearDown(): void {
-    $this->destroySandbox();
+    $this->deleteAllTestFiles();
   }
 }
 

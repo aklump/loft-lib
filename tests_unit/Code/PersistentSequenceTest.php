@@ -3,13 +3,12 @@
 namespace AKlump\LoftLib\Tests\Code;
 
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\PersistentSequence;
 
 /**
  * @covers \AKlump\LoftLib\Code\PersistentSequence
  */
-class PersistentSequenceTest extends PhpUnitTestCase {
+class PersistentSequenceTest extends \PHPUnit\Framework\TestCase {
 
     protected $obj;
 

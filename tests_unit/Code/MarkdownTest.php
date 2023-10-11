@@ -3,13 +3,12 @@
 namespace AKlump\LoftLib\Tests\Code;
 
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\Markdown;
 
 /**
  * @covers \AKlump\LoftLib\Code\Markdown
  */
-class MarkdownTest extends PhpUnitTestCase {
+class MarkdownTest extends \PHPUnit\Framework\TestCase {
 
     public function testRemoveLastItemFromInnerList()
     {

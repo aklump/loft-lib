@@ -2,15 +2,17 @@
 
 namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\LoftXmlElement;
+use AKlump\LoftLib\Tests\TestingXmlTrait;
 
 /**
  * Defines testing class LoftXmlElementTest.
  *
  * @covers \AKlump\LoftLib\Code\LoftXmlElement
  */
-class LoftXmlElementTest extends PhpUnitTestCase {
+class LoftXmlElementTest extends \PHPUnit\Framework\TestCase {
+
+  use TestingXmlTrait;
 
   /**
    * Provides data for testFromArrayAsArray.
@@ -595,4 +597,5 @@ James T. Kirk
     $this->assertFalse(LoftXmlElement::xmlChars($value));
     $this->assertSame($control, $value);
   }
+
 }

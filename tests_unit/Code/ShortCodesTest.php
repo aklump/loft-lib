@@ -2,13 +2,12 @@
 
 namespace AKlump\LoftLib\Tests\Code;
 
-use AKlump\LoftLib\Tests\PhpUnitTestCase;
 use AKlump\LoftLib\Code\ShortCodes;
 
 /**
  * @covers \AKlump\LoftLib\Code\ShortCodes
  */
-class ShortCodesTest extends PhpUnitTestCase {
+class ShortCodesTest extends \PHPUnit\Framework\TestCase {
 
   public function testShortcodesGetElementsWorkWithNBPS() {
     $base = 'lorem [foo&nbsp;id="1"]ipsum[/foo] dolar [bar&nbsp;id="5"]';
