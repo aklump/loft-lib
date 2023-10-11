@@ -55,17 +55,26 @@ class InfiniteSubset {
     if (func_num_args() > 3) {
       throw new \InvalidArgumentException('Passing $data to __construct is no longer supported');
     }
-    if ($stateArray === NULL) {
-      $this->container =& $_SESSION;
+    if (NULL === $stateArray) {
+      $_SESSION = $_SESSION ?? [];
+      $stateArray =& $_SESSION;
     }
-    else {
-      $this->container =& $stateArray;
-    }
-    $this->containerPath = $stateArrayPath;
+    $this->container =& $stateArray;
+    $this->setContainerPath($stateArrayPath);
     if (!$this->containerIsInitialized()) {
       $this->reset($dataset);
     }
   }
+
+  public function setContainerPath($containerPath): self {
+    if (is_array($containerPath)) {
+      $containerPath = implode('.', $containerPath);
+    }
+    $this->containerPath = $containerPath;
+
+    return $this;
+  }
+
 
   /**
    * Return a randomly ordered slice of dataset $count items long.

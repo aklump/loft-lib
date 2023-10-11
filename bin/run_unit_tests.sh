@@ -3,12 +3,5 @@ s="${BASH_SOURCE[0]}";[[ "$s" ]] || s="${(%):-%N}";while [ -h "$s" ];do d="$(cd 
 
 cd "$__DIR__/.."
 
-verbose=''
-if [[ "${*}" == *'-v'* ]]; then
-  verbose='-v'
-fi
-./vendor/bin/phpswap use 7.3 $verbose './vendor/bin/phpunit -c tests_unit/phpunit.xml'
-./vendor/bin/phpswap use 7.4 $verbose './vendor/bin/phpunit -c tests_unit/phpunit.xml'
-./vendor/bin/phpswap use 8.0 $verbose './vendor/bin/phpunit -c tests_unit/phpunit.xml'
-./vendor/bin/phpswap use 8.1 $verbose './vendor/bin/phpunit -c tests_unit/phpunit.xml'
-./vendor/bin/phpswap use 8.2 $verbose './vendor/bin/phpunit -c tests_unit/phpunit.xml'
+./vendor/bin/phpunit -c tests_unit/phpunit.xml "$@"
+exit $?

@@ -82,6 +82,20 @@ class InfiniteSubsetTest extends PhpUnitTestCase {
     $this->assertNotEmpty($this->objArgs[2]['do']['alpha'][123]);
   }
 
+  public function testWorksWhenPathIsArray() {
+    $path = ['foo'];
+    $dataset = [1, 2, 3, 4];
+    $obj = new InfiniteSubset($path, $dataset);
+    $foo = $obj->slice(1);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+    $this->assertContains(array_values($obj->slice(1))[0], [1, 2, 3, 4]);
+  }
+
   public function setUp(): void {
     $this->objArgs = [
       'do.alpha.123',
