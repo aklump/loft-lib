@@ -95,12 +95,14 @@ class Arrays {
       return $array;
     }
     $keys = array_keys($array);
-    shuffle($keys);
+    $attempts = 0;
     do {
+      ++$attempts;
+      shuffle($keys);
       $shuffled = array_map(function ($key) use ($array) {
         return $array[$key];
       }, array_combine($keys, $keys));
-    } while ($shuffled === $array);
+    } while ($shuffled === $array && $attempts < 20);
 
     return $shuffled;
   }
