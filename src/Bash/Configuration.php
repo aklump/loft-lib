@@ -2,6 +2,8 @@
 
 namespace AKlump\LoftLib\Bash;
 
+use InvalidArgumentException;
+
 /**
  * A class to handle variables in BASH.
  */
@@ -85,7 +87,7 @@ class Configuration {
    */
   private function getVarName($prefix, array $variable_name_parts) {
     if (!preg_match('/^[a-z]/i', $prefix)) {
-      throw new \InvalidArgumentException("Prefix must begin with a letter.");
+      throw new InvalidArgumentException("Prefix must begin with a letter.");
     }
 
     return [
@@ -103,9 +105,7 @@ class Configuration {
    * @return mixed
    *   The quoted variable value.
    */
-  private function quoteValue($value, $force = FALSE) {
-    $value = str_replace('"', '\"', $value);
-
+  private function quoteValue(string $var_name, $value, $force = FALSE) {
     if (!$force && is_numeric($value) && strlen($value) === strlen($value * 1)) {
       $value = $value * 1;
     }
@@ -113,10 +113,11 @@ class Configuration {
       $value = $value;
     }
     elseif (is_array($value)) {
-      // TODO https://trello.com/c/RK8pPYjl/44-c-b-732-certain-types-of-arrays-are-not-supported-in-yml-config-yet
-      $value = '';
+      throw new InvalidArgumentException(sprintf('%s: Nested arrays are not supported by this class.', $var_name));
     }
     else {
+      $quotable_chars_regex = '#["`]+#';
+      $value = preg_replace($quotable_chars_regex, '\\\\$0', $value);
       $value = '"' . $value . '"';
     }
 
@@ -138,10 +139,10 @@ class Configuration {
    */
   public function getVarEvalCode($var_name, $value, $comment = '') {
     if (is_array($value)) {
-      array_walk($value, function (&$value) {
+      array_walk($value, function (&$value) use ($var_name) {
         $value = static::typecast($value);
         // Array values appear to need quotes always.
-        $value = $this->quoteValue($value, TRUE);
+        $value = $this->quoteValue($var_name, $value, TRUE);
       });
 
       if (empty($value)) {
@@ -150,14 +151,11 @@ class Configuration {
 
       $open = substr($value[0], 0, 1) === '"' ? '' : '"';
       $close = substr($value[count($value) - 1], -1) === '"' ? '' : '"';
-
       $return = "declare -a $var_name=($open" . implode(' ', $value) . $close . ")";
     }
     else {
-
       $value = static::typecast($value);
-
-      $return = $var_name . '=' . $this->quoteValue($value);
+      $return = $var_name . '=' . $this->quoteValue($var_name, $value);
     }
 
     if ($comment) {

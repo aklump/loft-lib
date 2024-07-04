@@ -10,14 +10,35 @@ use AKlump\LoftLib\Bash\Configuration;
  */
 class ConfigurationTest extends TestCase {
 
-  public function setUp(): void {
-    $this->dependencies = ['config', '___'];
-    $this->createObj();
+  public function testInvalidNamespaceThrows() {
+    $config = new Configuration('123', '.');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessageMatches('#Prefix must begin with a letter.#');
+    $config->flatten(['foo' => 123]);
   }
 
-  protected function createObj() {
-    list ($prefix, $sep) = $this->dependencies;
-    $this->obj = new Configuration($prefix, $sep);
+  public function testUnsupportedValuesThrow() {
+    $config = new Configuration('config', '___');
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessageMatches('#lorem_ipsum#');
+    $config->getVarEvalCode('lorem_ipsum', [['foo', 'bar']]);
+  }
+
+  public static function dataFortestCharactersAreQuotedAsExpectedProvider() {
+    $tests = [];
+    $tests[] = ['"Hey!", he yelled!', 'foobar="\"Hey!\", he yelled!"'];
+    $tests[] = ["`<?php`\n", 'foobar="\\`<?php\\`' . "\n" . '"'];
+
+    return $tests;
+  }
+
+  /**
+   * @dataProvider dataFortestCharactersAreQuotedAsExpectedProvider
+   */
+  public function testCharactersAreQuotedAsExpected(string $subject, string $expected) {
+    $config = new Configuration('config', '___');
+    $result = $config->getVarEvalCode('foobar', $subject);
+    $this->assertSame($expected, $result);
   }
 
   /**
@@ -165,5 +186,15 @@ class ConfigurationTest extends TestCase {
     }
   }
 
+
+  public function setUp(): void {
+    $this->dependencies = ['config', '___'];
+    $this->createObj();
+  }
+
+  protected function createObj() {
+    list ($prefix, $sep) = $this->dependencies;
+    $this->obj = new Configuration($prefix, $sep);
+  }
 }
 
