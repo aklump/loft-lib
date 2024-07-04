@@ -1,12 +1,10 @@
 author: 'Aaron Klump <sourcecode@intheloftstudios.com>'
 create_tags: patch
-develop: master
 do_version_commit: true
 master: master
 patch_prefix: .
 patch_step: 1
 preserve_patch_zero: true
-push_develop: true
 push_master: true
 push_tags: true
 remote: origin
