@@ -20,6 +20,8 @@ class FilePathTest extends TestCase {
 
   use TestingFilesTrait;
 
+  private $sb;
+
   public function testCopyFromWithDifferentBasenames() {
     $source = new FilePath($this->sb . '/alpha/index.html');
     $source->put('do')->save();

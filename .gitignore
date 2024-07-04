@@ -1,6 +1,3 @@
-/documentation/README.md
-/documentation/core
-/vendor
+/vendor/
 composer.lock
 composer.lock*
-tests_unit/reports

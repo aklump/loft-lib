@@ -10,6 +10,8 @@ use AKlump\LoftLib\Code\ObjectCacheTrait;
  */
 class ObjectCacheTraitTest extends TestCase {
 
+  private $obj;
+
   public function testDefaultValueIsReturned() {
     $this->assertSame('lie', $this->obj->setValue('false', 'news')
       ->clearByKey('false')

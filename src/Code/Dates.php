@@ -21,6 +21,8 @@ define('DATES_FORMAT_ISO8601_TRIMMED', DATE_ISO8601 . '<');
 
 class Dates {
 
+  protected $bounds;
+
   /**
    * Dates constructor.
    *

@@ -4,11 +4,16 @@ namespace AKlump\LoftLib\Tests\Code;
 
 
 use AKlump\LoftLib\Code\Cache;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\LoftLib\Code\Cache
  */
-class CacheTest extends \PHPUnit\Framework\TestCase {
+final class CacheTest extends TestCase {
+
+  protected $obj;
+
+  protected $objArgs;
 
   /**
    * Provides data for testIdMethodSortsAndReturnsSameCacheId.
