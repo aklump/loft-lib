@@ -1,5 +1,6 @@
 page_order:
-  - readme
-  - changelog
-  - developers
-  - dataset
+  usage:
+    - readme
+    - changelog
+    - developers
+    - dataset

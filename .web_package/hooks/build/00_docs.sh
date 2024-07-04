@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-./bin/bind_book.sh
+# @file Compile documentation using Knowledge
+
+bin/bind_book.sh

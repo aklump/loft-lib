@@ -1,9 +1,9 @@
 -
   format: markdown
-  path: ../
-  include:
+  output: ../
+  pages:
     - '**/README.md'
     - '**/CHANGELOG.md'
 -
   format: website
-  path: ../docs
+  output: ../docs
