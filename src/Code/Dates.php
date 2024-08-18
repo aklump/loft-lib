@@ -538,7 +538,6 @@ class Dates {
       }
     }
 
-
     if (preg_match('/(?:in )?(.+?)\s+(?:by|on)\s+the\s+(.+)/i', $dateString, $matches)) {
       $months = array_map(function ($value) {
         return trim($value);
