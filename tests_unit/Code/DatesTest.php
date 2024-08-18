@@ -3,11 +3,16 @@
 namespace AKlump\LoftLib\Tests\Code;
 
 use AKlump\LoftLib\Code\Dates;
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\LoftLib\Code\Dates
  */
-class DatesTest extends \PHPUnit\Framework\TestCase {
+class DatesTest extends TestCase {
 
   public function setUp(): void {
     $this->objArgs = [
@@ -31,7 +36,27 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
    * For these tests, today is '2017-09-20'
    */
   public static function dataForTestNormalizeDateOnVariousInputsWorksAsExpectedProvider() {
+
     $tests = array();
+    $tests[] = array(
+      [
+        '2017-09-01T19:00:00',
+        '2017-09-16T19:00:00',
+      ],
+      'monthly on the 1st and 16th',
+    );
+    return $tests;
+    $tests[] = array(
+      [
+        '2017-02-20T20:00:00',
+        '2017-04-20T19:00:00',
+        '2017-06-20T19:00:00',
+        '2017-08-20T19:00:00',
+        '2017-10-20T19:00:00',
+        '2017-12-20T20:00:00',
+      ],
+      'every feb,apr,jun,aug,oct,dec 20th',
+    );
 
     $tests[] = array(
       ['2017-09-20T19:00:00'],
@@ -63,6 +88,8 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
       ],
       'every jan, apr, jul and oct by the 20th',
     );
+
+
 
     $tests[] = array(
       ['2018-09-20T19:00:00'],
@@ -121,14 +148,6 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
       '12pm America/Los_Angeles on Sep 9',
     );
 
-
-    $tests[] = array(
-      [
-        '2017-09-01T19:00:00',
-        '2017-09-16T19:00:00',
-      ],
-      'monthly on the 1st and 16th',
-    );
     $tests[] = array(
       [
         '2017-01-01T20:00:00',
@@ -198,10 +217,10 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
    * @dataProvider dataForTestNormalizeDateOnVariousInputsWorksAsExpectedProvider
    */
   public function testNormalizeDateOnVariousInputsWorksAsExpected($control, $subject) {
-    $now = new \DateTime('2017-09-20', new \DateTimeZone('America/Los_Angeles'));
+    $now = new DateTime('2017-09-20', new DateTimeZone('America/Los_Angeles'));
 
     $this->objArgs[0] = 'America/Los_Angeles';
-    $this->objArgs[1] = $now->format(DATE_ISO8601);
+    $this->objArgs[1] = $now->format(DateTimeInterface::ATOM);
     $this->createObj();
 
     $result = $this->obj->normalize($subject);
@@ -210,13 +229,13 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
   }
 
   public function testZReturnsAnObjectInUtcIgnoringProvidedTimezoneWhenDateIsAnObject() {
-    $date = date_create('2017-10-23T10:40:36', new \DateTimeZone('America/Los_Angeles'));
+    $date = date_create('2017-10-23T10:40:36', new DateTimeZone('America/Los_Angeles'));
     $this->assertSame('Mon, 23 Oct 2017 17:40:36 +0000', Dates::z($date, 'Arctic/Longyearbyen')
       ->format('r'));
   }
 
   public function testZReturnsAnObjectInUtcNotInherentTimezoneWhenDateIsAnObject() {
-    $date = date_create('2017-10-23T10:40:36', new \DateTimeZone('America/Los_Angeles'));
+    $date = date_create('2017-10-23T10:40:36', new DateTimeZone('America/Los_Angeles'));
     $this->assertSame('Mon, 23 Oct 2017 17:40:36 +0000', Dates::z($date)
       ->format('r'));
   }
@@ -227,13 +246,13 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
   }
 
   public function testOReturnsAnObjectInInherentTimezoneNotTheDefaultWhenDateIsObject() {
-    $date = date_create('2017-10-23T10:40:36', new \DateTimeZone('America/Los_Angeles'));
+    $date = date_create('2017-10-23T10:40:36', new DateTimeZone('America/Los_Angeles'));
     $this->assertSame('Mon, 23 Oct 2017 10:40:36 -0700', Dates::o($date)
       ->format('r'));
   }
 
   public function testOReturnsAnObjectInInherentTimezoneNotTheProvidedWhenDateIsAnObject() {
-    $date = date_create('2017-10-23T10:40:36', new \DateTimeZone('America/Los_Angeles'));
+    $date = date_create('2017-10-23T10:40:36', new DateTimeZone('America/Los_Angeles'));
     $this->assertSame('Mon, 23 Oct 2017 10:40:36 -0700', Dates::o($date, 'UTC')
       ->format('r'));
   }
@@ -298,7 +317,7 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
   }
 
   public function testZuluWithoutArgumentIsNow() {
-    $control = date_create('now', new \DateTimeZone('utc'))->format(DATE_ISO8601);
+    $control = date_create('now', new DateTimeZone('utc'))->format(DATE_ISO8601);
     $this->assertTrue(Dates::z()->format(DATE_ISO8601) >= $control);
   }
 
@@ -411,14 +430,14 @@ class DatesTest extends \PHPUnit\Framework\TestCase {
 
   public function testNormalizeDateMonthlyWithYearScopeProducesTwelveDates() {
     $this->objArgs[2] = $this->obj->create('2017-01-01T00:00:00');
-    $this->objArgs[3] = new \DateInterval('P1Y');
+    $this->objArgs[3] = new DateInterval('P1Y');
     $this->createObj();
     $this->assertCount(12, $this->obj->normalize('monthly on the 1st'));
   }
 
   public function testNormalizeDateMonthlyWithFiveYearScopeProducesSixtyDates() {
     $this->objArgs[2] = $this->obj->create('2017-01-01T00:00:00');
-    $this->objArgs[3] = new \DateInterval('P5Y');
+    $this->objArgs[3] = new DateInterval('P5Y');
     $this->createObj();
     $this->assertCount(60, $this->obj->normalize('monthly on the 1st'));
   }

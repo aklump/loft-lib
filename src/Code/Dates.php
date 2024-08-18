@@ -7,6 +7,12 @@ namespace AKlump\LoftLib\Code;
 // The DateTime object must be in UTC timezone first.
 define('DATE_ISO8601_SHORT', "Y-m-d\TH:i:s");
 
+use AKlump\LoftLib\Dates\BuildDatesFromNumbers;
+use AKlump\LoftLib\Dates\FilterDatesByPeriod;
+use AKlump\LoftLib\Dates\ParseDays;
+use AKlump\LoftLib\Dates\ParseMonths;
+
+
 /**
  * @var DATE_QUARTER
  *
@@ -177,7 +183,7 @@ class Dates {
    * unique to the second, and as short as possible.
    *
    * @param string|\DateTime $date The date that is to be formatted.
-   * @param                  $format     The format string; this includes
+   * @param string $format The format string; this includes
    *                                     date() with the addition of:
    *                                     - 'q'  The quarter in the year of the
    *                                     date.  1 to 4
@@ -507,6 +513,32 @@ class Dates {
     $dates = array();
     $now = $this->now();
     list($default_hour, $default_minute, $default_second) = $this->defaultTime;
+
+    $year_numbers = range($this->bounds[0]->format('Y'), $this->bounds[1]->format('Y'));
+    $month_numbers = (new ParseMonths())($dateString);
+    $day_numbers = (new ParseDays())($dateString);
+    if ($year_numbers && $month_numbers && $day_numbers) {
+      $dates = (new BuildDatesFromNumbers($now->getTimezone()))($year_numbers, $month_numbers, $day_numbers, [$default_hour], [$default_minute], [$default_second]);
+      $dates = (new FilterDatesByPeriod($this->bounds[0], $this->bounds[1]))($dates);
+
+      if ($dates) {
+        // Normalize all timezones to UTC
+        $dates = array_map(function ($date) {
+          return $this->z($date);
+        }, $dates);
+
+        // Convert to strings if asked.
+        if ($format) {
+          $dates = array_map(function ($date) use ($format) {
+            return static::format($date, $format);
+          }, $dates);
+        }
+
+        return $dates;
+      }
+    }
+
+
     if (preg_match('/(?:in )?(.+?)\s+(?:by|on)\s+the\s+(.+)/i', $dateString, $matches)) {
       $months = array_map(function ($value) {
         return trim($value);
