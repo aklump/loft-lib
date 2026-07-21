@@ -1,5 +1,5 @@
 {
-  "name": "aklump\/loft-lib",
+  "name": "aklump/loft-lib",
   "description": "Core utilities provided by In the Loft Studios",
   "type": "library",
   "license": "BSD-3-Clause",
@@ -11,24 +11,24 @@
   ],
   "autoload": {
     "psr-4": {
-      "AKlump\\LoftLib\\": "src\/"
+      "AKlump\\LoftLib\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "AKlump\\LoftLib\\Tests\\": "tests_unit\/"
+      "AKlump\\LoftLib\\Tests\\": "tests_phpunit/src/"
     }
   },
   "require": {
-    "php": "^7.3|^8",
-    "illuminate\/support": ">5",
-    "league\/mime-type-detection": "^1.11",
+    "php": "^7.3 || >=8.0",
     "ext-simplexml": "*",
-    "dflydev/dot-access-data": "^1.1|^2|^3"
+    "illuminate/support": ">=5",
+    "league/mime-type-detection": "^1.11",
+    "dflydev/dot-access-data": "^1.1 || ^2 || ^3"
   },
   "require-dev": {
-    "aklump/phpswap": "^0.0.4",
-    "phpunit\/phpunit": "^9.5|^10"
+    "aklump/phpswap": "^0.0",
+    "phpunit/phpunit": "^9.5 || ^10.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true
