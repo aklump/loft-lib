@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.1.7] - 2026-07-20
+
+### Fixed
+
+- Fixed several PHP 8.4 deprecation warnings.
+
+### Added
+
+- Added support for parsing multiple dates from strings with month and day ranges.
+
+### Changed
+
+- Reorganized test directory and updated PHPUnit configuration.
+
+### Removed
+
+- Removed several unused Bash utility scripts: `bin/bind_book.sh`, `bin/run_unit_tests.sh`.
+
 ## [2.1.6] - 2024-07-03
 
 ### Fixed
@@ -39,7 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- The return value of `\AKlump\LoftLib\Code\LoftXmlElement::addAttribute` is now `void`, so you can no longer chain this method, if you had done so.  **Search your codebase for chaining and fix!**
+- The return value of `\AKlump\LoftLib\Code\LoftXmlElement::addAttribute` is now `void`, so you can no longer chain this method, if you had done so. **Search your codebase for chaining and fix!**
 - Minimum PHP increased to ^7.3
 
 ## [1.5.0] - 2021-12-23
@@ -53,7 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Bash::confirm() for user input collection.
+- Bash::confirm () for user input collection.
 
 ## [1.3.0] - 2021-06-27
 

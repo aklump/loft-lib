@@ -10,6 +10,10 @@ use AKlump\LoftLib\Code\Markdown;
  */
 class MarkdownTest extends \PHPUnit\Framework\TestCase {
 
+    protected $objArgs;
+
+    protected $obj;
+
     public function testRemoveLastItemFromInnerList()
     {
         $this->objArgs[0] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ac blandit risus. Mauris tempor a lacus a placerat. Vivamus viverra dapibus metus non finibus. Nulla ultricies est nulla, eget efficitur nibh viverra non. Sed sed est viverra nunc malesuada venenatis vitae at tellus. Suspendisse potenti. Morbi non blandit elit, sit amet consectetur mi.\n\n## Relates To\n\n* [TC-254: fpo wip](https://trello.com/c/gFuH4jQM/71-tc-254-fpo-wip)

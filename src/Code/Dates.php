@@ -29,6 +29,12 @@ class Dates {
 
   protected $bounds;
 
+  protected $timezone;
+
+  protected $nowString;
+
+  protected $defaultTime;
+
   /**
    * Dates constructor.
    *
@@ -60,8 +66,8 @@ class Dates {
   public function __construct(
     $localTimeZoneName,
     $nowString = 'now',
-    \DateTime $periodStart = NULL,
-    \DateInterval $periodInterval = NULL,
+    ?\DateTime $periodStart = NULL,
+    ?\DateInterval $periodInterval = NULL,
     array $defaultTime = array()
   ) {
     $this->timezone = new \DateTimeZone($localTimeZoneName);
@@ -842,7 +848,7 @@ class Dates {
    * @return $this
    * @throws \Exception
    */
-  private function setNormalizationPeriod(\DateTime $start = NULL, \DateInterval $period = NULL) {
+  private function setNormalizationPeriod(?\DateTime $start = NULL, ?\DateInterval $period = NULL) {
     $start = is_null($start) ? $this->setDay($this->now(), 1)
       ->setTime(0, 0, 0) : $start;
     $period = is_null($period) ? new \DateInterval('P1M') : $period;

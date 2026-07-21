@@ -30,7 +30,7 @@ namespace AKlump\LoftLib\Code;
  */
 class PersistentSequence extends InfiniteSubset {
 
-    public static function next($stateArrayPath = '', $dataset = array(), array &$stateArray = null)
+    public static function next($stateArrayPath = '', $dataset = array(), ?array &$stateArray = null)
     {
         $instance = new static($stateArrayPath, $dataset, $stateArray);
 

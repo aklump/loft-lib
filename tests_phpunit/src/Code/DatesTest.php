@@ -14,6 +14,10 @@ use PHPUnit\Framework\TestCase;
  */
 class DatesTest extends TestCase {
 
+  protected $objArgs;
+
+  protected $obj;
+
   public function setUp(): void {
     $this->objArgs = [
       'America/Los_Angeles',
@@ -88,8 +92,31 @@ class DatesTest extends TestCase {
       ],
       'every jan, apr, jul and oct by the 20th',
     );
-
-
+    $tests[] = array(
+      [
+        '2017-01-01T20:00:00',
+        '2017-02-01T20:00:00',
+        '2017-03-01T20:00:00',
+      ],
+      'Jan-Mar 1st',
+    );
+    $tests[] = array(
+      [
+        '2017-01-01T20:00:00',
+        '2017-01-02T20:00:00',
+        '2017-01-03T20:00:00',
+      ],
+      'Jan 1st-3rd',
+    );
+    $tests[] = array(
+      [
+        '2017-01-01T20:00:00',
+        '2017-01-02T20:00:00',
+        '2017-02-01T20:00:00',
+        '2017-02-02T20:00:00',
+      ],
+      'Jan-Feb 1st-2nd',
+    );
 
     $tests[] = array(
       ['2018-09-20T19:00:00'],
