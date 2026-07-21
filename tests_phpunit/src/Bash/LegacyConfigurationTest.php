@@ -10,6 +10,10 @@ use AKlump\LoftLib\Bash\LegacyConfiguration;
  */
 class LegacyConfigurationTest extends TestCase {
 
+  protected $dependencies;
+
+  protected $obj;
+
   public function setUp(): void {
     $this->dependencies = ['config', '___'];
     $this->createObj();

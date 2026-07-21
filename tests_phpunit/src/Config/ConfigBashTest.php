@@ -16,6 +16,10 @@ use PHPUnit\Framework\TestCase;
  */
 class ConfigBashTest extends TestCase {
 
+  protected $sb;
+
+  protected $dir;
+
   use TestingFilesTrait;
 
   public function testSetNumericArrayPlusFormat() {

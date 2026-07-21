@@ -12,6 +12,10 @@ use PHPUnit\Framework\TestCase;
  */
 class InfiniteSubsetTest extends TestCase {
 
+  protected $objArgs;
+
+  protected $obj;
+
   use TestingProtectedTrait;
 
   public function testSessionIsInitializedOkay() {

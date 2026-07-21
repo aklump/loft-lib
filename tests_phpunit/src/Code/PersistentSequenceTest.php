@@ -12,6 +12,8 @@ class PersistentSequenceTest extends \PHPUnit\Framework\TestCase {
 
     protected $obj;
 
+    protected $objArgs;
+
     public function testNext()
     {
         $session = [];

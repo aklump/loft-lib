@@ -52,7 +52,7 @@ class InfiniteSubset {
    * (strings, int, etc) not arrays nor objects.
    * @param array $stateArray Defaults to $_SESSION.  An array to hold state.
    */
-  public function __construct($stateArrayPath, array $dataset, array &$stateArray = NULL) {
+  public function __construct($stateArrayPath, array $dataset, ?array &$stateArray = NULL) {
     if (func_num_args() > 3) {
       throw new \InvalidArgumentException('Passing $data to __construct is no longer supported');
     }
@@ -188,7 +188,7 @@ class InfiniteSubset {
    *
    * @return $this
    */
-  private function setContainerData(array $stack = NULL, array $dataset = NULL) {
+  private function setContainerData(?array $stack = NULL, ?array $dataset = NULL) {
     $data = $this->getContainerData();
     if (!is_null($stack)) {
       $data['stack'] = $stack;

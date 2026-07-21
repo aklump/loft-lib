@@ -410,7 +410,7 @@ James T. Kirk
   /**
    * @dataProvider dataForTestGetTemplateWithDataProvider
    */
-  public function testGetTemplateWithData($key, $value, callable $control = NULL) {
+  public function testGetTemplateWithData($key, $value, ?callable $control = NULL) {
     $xml = new LoftXmlElement('<facet/>');
     $xml->addChildFromArray($key, $value);
     $this->assertXMLHasChild($key, $xml);

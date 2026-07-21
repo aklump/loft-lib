@@ -10,6 +10,10 @@ use AKlump\LoftLib\Bash\Configuration;
  */
 class ConfigurationTest extends TestCase {
 
+  protected $dependencies;
+
+  protected $obj;
+
   public function testInvalidNamespaceThrows() {
     $config = new Configuration('123', '.');
     $this->expectException(\InvalidArgumentException::class);

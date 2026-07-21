@@ -4,6 +4,10 @@ namespace AKlump\LoftLib\Tests;
 
 class DatasetTestBase extends \PHPUnit\Framework\TestCase {
 
+  protected $obj;
+
+  protected $objArgs;
+
   /**
    * Provides data for testDefaults.
    *

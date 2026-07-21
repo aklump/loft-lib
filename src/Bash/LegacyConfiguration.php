@@ -14,6 +14,10 @@ class LegacyConfiguration {
 
   const SEPARATOR = '___';
 
+  protected $varNamePrefix;
+
+  protected $separator;
+
   public function __construct($var_name_prefix = NULL, $separator = NULL) {
     $this->varNamePrefix = static::VAR_NAME_PREFIX;
     $this->separator = $this->varNamePrefix;

@@ -260,7 +260,7 @@ class FilePath implements PersistentInterface {
    *
    * @return string
    */
-  public static function dateName($extension = '', $format = NULL, \DateTime $datetime = NULL) {
+  public static function dateName($extension = '', $format = NULL, ?\DateTime $datetime = NULL) {
     $replaceOffsetWithZulu = FALSE;
     if (is_null($format)) {
       $replaceOffsetWithZulu = TRUE;
