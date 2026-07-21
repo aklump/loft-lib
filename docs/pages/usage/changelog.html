@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=2.1.7">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=2.1.7">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=2.1.7">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=2.2.0">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=2.2.0">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=2.2.0">
         <title>Changelog | In the Loft Studios PHP Library</title>
   </head>
 <body class="my-5">
@@ -49,6 +49,23 @@
       <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2>[Unreleased]</h2>
+<h2>[2.1.7] - 2026-07-20</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed several PHP 8.4 deprecation warnings.</li>
+</ul>
+<h3>Added</h3>
+<ul>
+<li>Added support for parsing multiple dates from strings with month and day ranges.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Reorganized test directory and updated PHPUnit configuration.</li>
+</ul>
+<h3>Removed</h3>
+<ul>
+<li>Removed several unused Bash utility scripts: <code>bin/bind_book.sh</code>, <code>bin/run_unit_tests.sh</code>.</li>
+</ul>
 <h2>[2.1.6] - 2024-07-03</h2>
 <h3>Fixed</h3>
 <ul>
@@ -80,7 +97,7 @@
 </ul>
 <h3>Changed</h3>
 <ul>
-<li>The return value of <code>\AKlump\LoftLib\Code\LoftXmlElement::addAttribute</code> is now <code>void</code>, so you can no longer chain this method, if you had done so.  <strong>Search your codebase for chaining and fix!</strong></li>
+<li>The return value of <code>\AKlump\LoftLib\Code\LoftXmlElement::addAttribute</code> is now <code>void</code>, so you can no longer chain this method, if you had done so. <strong>Search your codebase for chaining and fix!</strong></li>
 <li>Minimum PHP increased to ^7.3</li>
 </ul>
 <h2>[1.5.0] - 2021-12-23</h2>
@@ -92,7 +109,7 @@
 <h2>[1.4.0] - 2021-07-17</h2>
 <h3>Added</h3>
 <ul>
-<li>Bash::confirm() for user input collection.</li>
+<li>Bash::confirm () for user input collection.</li>
 </ul>
 <h2>[1.3.0] - 2021-06-27</h2>
 <h3>Added</h3>
@@ -125,7 +142,7 @@
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>2.1.7</strong>
+        <strong>2.2.0</strong>
         &bull;
                     Last Update: <strong>7/20/2026</strong>
           </div>
@@ -262,9 +279,9 @@
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=2.1.7"></script>
-  <script src="../../dist/lunr.js?ver=2.1.7"></script>
-  <script src="../../dist/knowledge.min.js?ver=2.1.7"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=2.2.0"></script>
+  <script src="../../dist/lunr.js?ver=2.2.0"></script>
+  <script src="../../dist/knowledge.min.js?ver=2.2.0"></script>
 
 </body>
 </html>
